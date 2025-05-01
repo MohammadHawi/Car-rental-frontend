@@ -1,0 +1,16 @@
+<div class="sidebar-container">
+    <div class="logo-container">
+      <img src="assets/logo.png" alt="Car Rental Logo" class="logo">
+      <h2>Car Rental</h2>
+    </div>
+    
+    <mat-nav-list>
+      <a mat-list-item 
+         *ngFor="let item of navItems" 
+         [routerLink]="item.route"
+         routerLinkActive="active-link">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    </mat-nav-list>
+  </div>

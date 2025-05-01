@@ -1,0 +1,115 @@
+<div class="dashboard-container">
+    <h1 class="page-title">Dashboard</h1>
+    
+    <div class="stats-cards">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon car-icon">
+            <mat-icon>directions_car</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>Total Cars</h3>
+            <p class="stat-value">{{ stats.totalCars }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon available-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>Available Cars</h3>
+            <p class="stat-value">{{ stats.availableCars }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon customer-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>Total Customers</h3>
+            <p class="stat-value">{{ stats.totalCustomers }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon contract-icon">
+            <mat-icon>description</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>Active Contracts</h3>
+            <p class="stat-value">{{ stats.activeContracts }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon revenue-icon">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>Monthly Revenue</h3>
+            <p class="stat-value">${{ stats.revenue }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    
+    <div class="dashboard-content">
+      <div class="dashboard-section">
+        <h2>Recent Contracts</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Car</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let contract of recentContracts">
+              <td>{{ contract.id }}</td>
+              <td>{{ contract.customer }}</td>
+              <td>{{ contract.car }}</td>
+              <td>{{ contract.startDate }}</td>
+              <td>{{ contract.endDate }}</td>
+              <td>
+                <span class="status-badge active">{{ contract.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="dashboard-section">
+        <h2>Popular Cars</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Rentals</th>
+              <th>Availability</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let car of popularCars">
+              <td>{{ car.model }}</td>
+              <td>{{ car.rentals }}</td>
+              <td>{{ car.availability }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

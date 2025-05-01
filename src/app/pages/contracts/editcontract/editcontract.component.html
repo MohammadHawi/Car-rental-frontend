@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>Edit Contract</h2>
+
+<mat-dialog-content class="dialog-content">
+  <form class="contract-form" autocomplete="off">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Car Plate</mat-label>
+        <input matInput [(ngModel)]="contract.carPlate" name="carPlate" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Customer Name</mat-label>
+        <input matInput [(ngModel)]="contract.customerName" name="customerName" required>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Check Out</mat-label>
+        <input matInput type="date" [(ngModel)]="contract.checkOut" name="checkOut" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Check In</mat-label>
+        <input matInput type="date" [(ngModel)]="contract.checkIn" name="checkIn" required>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Price</mat-label>
+        <input matInput type="number" [(ngModel)]="contract.price" name="price" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Total</mat-label>
+        <input matInput type="number" [(ngModel)]="contract.total" name="total" required>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Paid</mat-label>
+        <input matInput type="number" [(ngModel)]="contract.paid" name="paid" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Balance</mat-label>
+        <input matInput type="number" [(ngModel)]="contract.balance" name="balance">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="form-field full-width">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="contract.status" name="status" required>
+          <mat-option value="1">Active</mat-option>
+          <mat-option value="0">Inactive</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button color="warn" (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="onSave()">Save</button>
+</mat-dialog-actions>

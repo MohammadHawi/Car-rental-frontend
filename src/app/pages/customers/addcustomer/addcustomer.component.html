@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Add New Customer</h2>
+<mat-dialog-content>
+  <form [formGroup]="customerForm">
+    <mat-form-field appearance="outline" class="half-width">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="firstName" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="half-width">
+      <mat-label>Middle Name</mat-label>
+      <input matInput formControlName="middleName">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="half-width">
+      <mat-label>Last Name</mat-label>
+      <input matInput  formControlName="lastName" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="half-width">
+      <mat-label>Nationality</mat-label>
+      <mat-select class="form-select" name="nationalityId" id="nationalityId" formControlName="nationalityId" required >
+        <mat-option *ngFor="let n of Nationalities;" [value]="n.id">{{ n.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Phone number</mat-label>
+      <input matInput formControlName="PhoneNumber" required>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button color="primary" [disabled]="!customerForm.valid" [mat-dialog-close]="this.customerForm.value">Save</button>
+</mat-dialog-actions>

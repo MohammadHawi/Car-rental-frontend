@@ -1,0 +1,54 @@
+
+<h1 mat-dialog-title>Edit Customer</h1>
+
+<div mat-dialog-content>
+  <form #customerForm="ngForm" class="customer-form">
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>First Name</mat-label>
+      <input matInput [(ngModel)]="customer.firstName" name="firstName" required />
+      <mat-error *ngIf="customerForm.submitted && !customer.firstName">
+        First Name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Middle Name</mat-label>
+      <input matInput [(ngModel)]="customer.middleName" name="middleName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Last Name</mat-label>
+      <input matInput [(ngModel)]="customer.lastName" name="lastName" required />
+      <mat-error *ngIf="customerForm.submitted && !customer.lastName">
+        Last Name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Phone Number</mat-label>
+      <input matInput [(ngModel)]="customer.phoneNumber" name="phoneNumber" required />
+      <mat-error *ngIf="customerForm.submitted && !customer.phoneNumber">
+        Phone Number is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nationality</mat-label>
+      <mat-select [(ngModel)]="customer.nationalityId" name="nationality" required>
+        <mat-option *ngFor="let nationality of nationalities" [value]="nationality.id">
+          {{ nationality.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="customerForm.submitted && !customer.nationality">
+        Nationality is required
+      </mat-error>
+    </mat-form-field>
+
+  </form>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="customerForm.form.valid && save()" [disabled]="!customerForm.form.valid">Save</button>
+</div>

@@ -1,0 +1,25 @@
+.dialog-content {
+    padding-top: 10px;
+  }
+  
+  .contract-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .form-field {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
