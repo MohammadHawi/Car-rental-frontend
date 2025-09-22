@@ -1,0 +1,107 @@
+<div class="booking-dialog">
+    <h2 mat-dialog-title>{{ isEditMode ? 'Edit Booking' : 'New Booking' }}</h2>
+    
+    <div class="loading-overlay" *ngIf="isLoading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    
+    <mat-dialog-content>
+      <div class="car-details" *ngIf="car">
+        <div class="car-info">
+          <h3>{{ car.make }} {{ car.model }}</h3>
+          <p class="car-plate">License Plate: {{ car.plate }}</p>
+          <p class="car-rate" *ngIf="car.price">Daily Rate: ${{ car.price }}</p>
+        </div>
+      </div>
+      
+      <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Customer</mat-label>
+
+            <input matInput formControlName="customerId"
+             [matAutocomplete]="auto"
+             (ngModelChange)="onNameChange($event)" required>
+
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectCustomer($event)">
+              <mat-option *ngFor="let customer of customerSuggestions" [value]="customer.fullName">
+                {{ customer.fullName }}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error *ngIf="bookingForm.get('customerId')?.hasError('required')">
+              Customer is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row date-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Start Date</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="startDate" required>
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-error *ngIf="bookingForm.get('startDate')?.hasError('required')">
+              Start date is required
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>End Date</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="endDate" required>
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-error *ngIf="bookingForm.get('endDate')?.hasError('required')">
+              End date is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row price-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Daily Price ($)</mat-label>
+            <input matInput type="number" formControlName="price" required>
+            <mat-error *ngIf="bookingForm.get('price')?.hasError('required')">
+              Price is required
+            </mat-error>
+            <mat-error *ngIf="bookingForm.get('price')?.hasError('min')">
+              Price must be greater than 0
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Deposit ($)</mat-label>
+            <input matInput type="number" formControlName="deposit">
+            <mat-error *ngIf="bookingForm.get('deposit')?.hasError('min')">
+              Deposit must be greater than or equal to 0
+            </mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Notes</mat-label>
+            <textarea matInput formControlName="note" rows="3"></textarea>
+          </mat-form-field>
+        </div>
+        
+        <div class="booking-summary">
+          <h3>Booking Summary</h3>
+          <div class="summary-row">
+            <span>Total Days:</span>
+            <span>{{ calculateTotalDays() }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Total Price:</span>
+            <span>${{ calculateTotalPrice() }}</span>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="bookingForm.invalid || isLoading">
+        {{ isEditMode ? 'Update' : 'Book Now' }}
+      </button>
+    </mat-dialog-actions>
+  </div>

@@ -1,0 +1,115 @@
+<div class="page-container">
+    <div class="page-header">
+      <h1 class="page-title">Financial Dashboard</h1>
+      <form [formGroup]="dateRangeForm" class="date-range-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Start Date</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>End Date</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" (click)="onDateRangeChange()">
+          Apply
+        </button>
+      </form>
+    </div>
+    
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading financial data...</p>
+    </div>
+    
+    <div *ngIf="error" class="error-container">
+      <p>Error loading financial data. Please try again.</p>
+      <button mat-raised-button color="primary" (click)="loadFinancialData()">
+        Retry
+      </button>
+    </div>
+    
+    <div *ngIf="!loading && !error" class="financial-summary">
+      <div class="stats-cards">
+        <mat-card class="stat-card income-card">
+          <mat-card-content>
+            <div class="stat-icon income-icon">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="stat-details">
+              <h3>Total Income</h3>
+              <p class="stat-value">${{ financialSummary.totalIncome | number:'1.2-2' }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stat-card expense-card">
+          <mat-card-content>
+            <div class="stat-icon expense-icon">
+              <mat-icon>trending_down</mat-icon>
+            </div>
+            <div class="stat-details">
+              <h3>Total Expenses</h3>
+              <p class="stat-value">${{ financialSummary.totalExpenses | number:'1.2-2' }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stat-card net-income-card">
+          <mat-card-content>
+            <div class="stat-icon net-income-icon">
+              <mat-icon>account_balance</mat-icon>
+            </div>
+            <div class="stat-details">
+              <h3>Net Income</h3>
+              <p class="stat-value" *ngIf="financialSummary" [ngClass]="{'positive': financialSummary.netIncome >= 0, 'negative': financialSummary.netIncome < 0}">
+                ${{ financialSummary.netIncome | number:'1.2-2' }}
+              </p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <div class="recent-transactions">
+        <h2>Recent Transactions</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of recentTransactions">
+              <td>{{ transaction.date | date:'mediumDate' }}</td>
+              <td>
+                <span class="transaction-type" [ngClass]="{'income': transaction.type === 0, 'expense': transaction.type === 1}">
+                  {{ getTypeName(transaction.type) }}
+                </span>
+              </td>
+              <td>{{ getCategoryName(transaction.category) }}</td>
+              <td>{{ transaction.description }}</td>
+              <td [ngClass]="{'income-amount': transaction.type === 0, 'expense-amount': transaction.type === 1}">
+                ${{ transaction.amount | number:'1.2-2' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="view-all-link">
+          <a [routerLink]="['/finance/transactions']" mat-button color="primary">
+            View All Transactions
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,83 @@
+<div class="completed-tasks-container">
+  <div class="completed-tasks-header">
+    <div class="completed-tasks-title">
+      <h1>Completed Tasks</h1>
+      <p>View your task history</p>
+    </div>
+  </div>
+  
+  <div class="task-filters">
+    <div class="search-box">
+      <mat-form-field appearance="outline">
+        <mat-label>Search completed tasks</mat-label>
+        <input matInput (input)="onSearchChange($event)" [value]="searchText">
+        <button mat-icon-button matSuffix *ngIf="searchText" (click)="clearSearch()" type="button">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-icon matSuffix *ngIf="!searchText">search</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+  
+  <div class="task-navigation">
+    <nav mat-tab-nav-bar>
+      <a mat-tab-link
+         routerLink="/tasks/active"
+         routerLinkActive #activeLink="routerLinkActive">
+        Active Tasks
+      </a>
+      <a mat-tab-link
+         routerLink="/tasks/completed"
+         routerLinkActive #completedLink="routerLinkActive">
+        Completed Tasks
+      </a>
+    </nav>
+  </div>
+  
+  <div class="completed-tasks-content">
+    <div class="loading-overlay" *ngIf="isLoading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    
+    <div class="empty-state" *ngIf="filteredTasks.length === 0 && !isLoading">
+      <mat-icon>assignment_turned_in</mat-icon>
+      <h3>No completed tasks found</h3>
+      <p *ngIf="completedTasks.length > 0">Try adjusting your search criteria</p>
+      <p *ngIf="completedTasks.length === 0">Complete some tasks to see them here</p>
+      <button mat-raised-button color="primary" routerLink="/tasks/active" *ngIf="completedTasks.length === 0">
+        Go to Active Tasks
+      </button>
+    </div>
+    
+    <div class="completed-tasks-list" *ngIf="filteredTasks.length > 0 && !isLoading">
+      <div class="task-card" *ngFor="let task of filteredTasks">
+        <div class="task-card-content">
+          <div class="task-priority" *ngIf="task.isImportant">
+            <mat-icon class="important-icon">star</mat-icon>
+          </div>
+          
+          <div class="task-details">
+            <div class="task-description">{{ task.description }}</div>
+            <div class="task-meta">
+              <div class="task-completion-info">
+                <mat-icon>check_circle</mat-icon>
+                <span>Completed {{ formatCompletionDate(task.completedAt || '') }}</span>
+              </div>
+              
+              <div class="task-due-date">
+                <mat-icon>event</mat-icon>
+                <span>Due date: {{ task.dueDate | date:'mediumDate' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="task-actions">
+            <button mat-icon-button color="warn" (click)="deleteTask(task, $event)" matTooltip="Delete task">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

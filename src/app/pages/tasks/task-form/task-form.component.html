@@ -1,0 +1,64 @@
+<div class="task-form-container">
+  <h2 mat-dialog-title>{{ isEditMode ? 'Edit Task' : 'Create New Task' }}</h2>
+  
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <mat-dialog-content>
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <mat-form-field appearance="outline">
+          <mat-label>Task Description</mat-label>
+          <textarea 
+            matInput 
+            formControlName="description" 
+            placeholder="Enter task description" 
+            rows="3"
+            required>
+          </textarea>
+          <mat-error *ngIf="taskForm.get('description')?.hasError('required')">
+            Description is required
+          </mat-error>
+          <mat-error *ngIf="taskForm.get('description')?.hasError('maxlength')">
+            Description cannot exceed 500 characters
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-field">
+        <mat-form-field appearance="outline">
+          <mat-label>Due Date</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="picker" 
+            formControlName="dueDate"
+            [min]="minDate"
+            required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="taskForm.get('dueDate')?.hasError('required')">
+            Due date is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-field">
+        <mat-checkbox formControlName="isImportant" color="primary">
+          Mark as important
+        </mat-checkbox>
+      </div>
+    </form>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()" 
+      [disabled]="taskForm.invalid || isLoading">
+      {{ isEditMode ? 'Update' : 'Create' }}
+    </button>
+  </mat-dialog-actions>
+</div>

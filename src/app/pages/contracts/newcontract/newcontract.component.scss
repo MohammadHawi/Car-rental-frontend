@@ -33,6 +33,16 @@ mat-form-field.half-width {
 mat-form-field.quart-width {
   width: 31%;
 }
+.quart-width-n{
+  width: 31%;
+  gap:1rem;
+  margin-right: 0.5rem;
+}
+
+.half-width-n{
+  width: 48%;
+  margin-right: 0.5rem;
+}
 
 mat-checkbox.full-width {
   width: 100%;

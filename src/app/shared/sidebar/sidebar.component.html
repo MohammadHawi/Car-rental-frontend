@@ -1,16 +1,33 @@
 <div class="sidebar-container">
-    <div class="logo-container">
-      <img src="assets/logo.png" alt="Car Rental Logo" class="logo">
-      <h2>Car Rental</h2>
-    </div>
-    
-    <mat-nav-list>
+  <div class="logo-container">
+    <img src="assets/images/logo.jpg" alt="Car Rental Logo" class="logo">
+
+    <!-- <h2>Daniel Rent A Car</h2> -->
+  </div>
+
+  <mat-nav-list>
+    <ng-container *ngFor="let item of navItems">
       <a mat-list-item 
-         *ngFor="let item of navItems" 
-         [routerLink]="item.route"
-         routerLinkActive="active-link">
+         (click)="toggleSubMenu(item)" 
+         [routerLink]="!item.children ? item.route : null"
+         [routerLinkActive]="!item.children ? 'active-link' : ''">
         <mat-icon>{{ item.icon }}</mat-icon>
         <span class="nav-label">{{ item.label }}</span>
+        <mat-icon *ngIf="item.children" class="expand-icon">
+          {{ item.expanded ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
       </a>
-    </mat-nav-list>
-  </div>
+
+      <!-- Render children if present and expanded -->
+      <div *ngIf="item.children && item.expanded" class="sub-menu">
+        <a mat-list-item 
+           *ngFor="let child of item.children" 
+           [routerLink]="child.route" 
+           routerLinkActive="active-link"
+           class="sub-item">
+          <span class="nav-label">{{ child.label }}</span>
+        </a>
+      </div>
+    </ng-container>
+  </mat-nav-list>
+</div>

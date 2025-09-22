@@ -15,7 +15,7 @@
              (ngModelChange)="onNameChange($event)" (ngModelChange)="formValidation()" required>
 
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectCustomer($event)">
-        <mat-option *ngFor="let customer of customerSuggestions" [value]="customer.fullName">
+        <mat-option *ngFor="let customer of customerSuggestions" [value]="this.contract['Cid']">
           {{ customer.fullName }}
         </mat-option>
       </mat-autocomplete>
@@ -28,22 +28,22 @@
 
     <!-- New Customer Section -->
     <div *ngIf="newCustomer">
-      <mat-form-field appearance="outline" class="quart-width">
+      <mat-form-field appearance="outline" class="quart-width-n">
         <mat-label>First Name</mat-label>
         <input matInput [(ngModel)]="contract['firstName']" required [ngModelOptions]="{standalone: true}" (ngModelChange)="formValidation()">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="quart-width">
+      <mat-form-field appearance="outline" class="quart-width-n">
         <mat-label>Middle Name</mat-label>
         <input matInput [(ngModel)]="contract['middleName']" [ngModelOptions]="{standalone: true}" (ngModelChange)="formValidation()">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="quart-width">
+      <mat-form-field appearance="outline" class="quart-width-n">
         <mat-label>Last Name</mat-label>
         <input matInput  [(ngModel)]="contract['lastName']" required [ngModelOptions]="{standalone: true}" (ngModelChange)="formValidation()">
       </mat-form-field>
 
-        <mat-form-field appearance="outline" class="half-width">
+        <mat-form-field appearance="outline" class="half-width-n">
           <mat-label>Nationality</mat-label>
           <mat-select class="form-select" name="nationalityId" id="nationalityId" [(ngModel)]="contract['nationalityId']" required >
             <mat-option *ngFor="let n of Nationalities;" [value]="n.id">{{ n.name }}</mat-option>
@@ -51,7 +51,7 @@
           
         </mat-form-field>
 
-      <mat-form-field appearance="outline" class="half-width">
+      <mat-form-field appearance="outline" class="half-width-n">
         <mat-label>Phone number</mat-label>
         <input matInput [(ngModel)]="contract['PhoneNumber']" required [ngModelOptions]="{standalone: true}" (ngModelChange)="formValidation()">
       </mat-form-field>

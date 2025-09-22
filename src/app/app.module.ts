@@ -17,6 +17,12 @@ import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatBadgeModule } from '@angular/material/badge';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -39,6 +45,14 @@ import { ContractsComponent } from './pages/contracts/contracts.component';
 import { NewcontractComponent } from './pages/contracts/newcontract/newcontract.component';
 import { EditContractComponent } from './pages/contracts/editcontract/editcontract.component';
 import { ReturnContractComponent } from './pages/contracts/return-contract/return-contract.component';
+import { FinanceDashboardComponent } from './pages/finance/finance-dashboard/finance-dashboard.component';
+import { TransactionsListComponent } from './pages/finance/transaction-list/transaction-list.component';
+import { TransactionFormComponent } from './pages/finance/transaction-form/transaction-form.component';
+import { BookingCalendarComponent } from './pages/booking-calendar/booking-calendar/booking-calendar.component';
+import { NewBookingComponent } from './pages/booking-calendar/new-booking/new-booking.component';
+import { TaskFormComponent } from './pages/tasks/task-form/task-form.component';
+import { TaskListComponent } from './pages/tasks/task-list/task-list.component';
+import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed-tasks.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +69,14 @@ import { ReturnContractComponent } from './pages/contracts/return-contract/retur
     NewcontractComponent,
     EditContractComponent,
     ReturnContractComponent,
+    FinanceDashboardComponent,
+    TransactionsListComponent,
+    TransactionFormComponent,
+    BookingCalendarComponent,
+    NewBookingComponent,
+    TaskFormComponent,
+    TaskListComponent,
+    CompletedTasksComponent
     ],
   imports: [
     BrowserModule,
@@ -83,6 +105,12 @@ import { ReturnContractComponent } from './pages/contracts/return-contract/retur
     MatNativeDateModule,
     MatAutocompleteModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+    MatTabsModule,
+    MatBadgeModule
     
   ],
   providers: [],

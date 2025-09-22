@@ -1,0 +1,150 @@
+<div class="booking-calendar-container">
+  <div class="calendar-header">
+    <div class="calendar-title">
+      <h1>Car Booking Calendar</h1>
+    </div>
+    
+    <div class="calendar-controls">
+      <div class="period-navigation">
+        <button mat-icon-button (click)="previousPeriod()" matTooltip="Previous period">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="current-period">{{ getFormattedPeriod() }}</span>
+        <button mat-icon-button (click)="nextPeriod()" matTooltip="Next period">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button mat-button (click)="today()">Today</button>
+      </div>
+      
+      <div class="view-controls">
+        <button mat-button [class.active]="viewMode === 'week'" (click)="viewMode = 'week'; initCalendar(); processBookingEvents()">Week</button>
+        <button mat-button [class.active]="viewMode === 'month'" (click)="viewMode = 'month'; initCalendar(); processBookingEvents()">Month</button>
+        
+        <!-- Add fullscreen button -->
+        <button mat-icon-button 
+                (click)="toggleFullscreen()" 
+                [matTooltip]="isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'"
+                class="fullscreen-btn">
+          <mat-icon>{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="calendar-filters" [class.fullscreen-hidden]="isFullscreen">
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <div class="filter-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Car Status</mat-label>
+          <mat-select formControlName="carStatus">
+            <mat-option value="all">All Cars</mat-option>
+            <mat-option value="available">Available Only</mat-option>
+            <mat-option value="rented">Rented Only</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Date Range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Start date" formControlName="dateRange">
+            <input matEndDate placeholder="End date" formControlName="dateRange">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        
+        <div class="filter-actions">
+          <button mat-raised-button color="primary" type="submit">Apply Filters</button>
+          <button mat-button type="button" (click)="resetFilters()">Reset</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <div class="calendar-wrapper" *ngIf="!isLoading">
+    <div class="calendar-grid">
+      <!-- Car labels column -->
+      <div class="car-labels-column">
+        <div class="car-label-header">
+          <span>Cars</span>
+        </div>
+        <div class="car-labels-scroll" #carLabelsScroll (scroll)="onCarLabelsScroll($event)">
+          <div class="car-label" *ngFor="let car of cars">
+            <div class="car-info">
+              <span class="car-plate" 
+                    [ngClass]="{
+                      'rented': isCarCurrentlyRented(car.id),
+                      'active': getCarRentalStatus(car.id).status === 'active',
+                      'overdue': getCarRentalStatus(car.id).status === 'overdue',
+                      'available': !isCarCurrentlyRented(car.id)
+                    }">
+                {{ car.plate }}
+              </span>
+              <span class="car-model">{{ car.brand }} {{ car.class }}</span>
+              <span class="rental-info" *ngIf="isCarCurrentlyRented(car.id)">
+                {{ getCarRentalStatus(car.id).customerName }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Calendar grid -->
+      <div class="calendar-grid-content" #calendarContainer>
+        <!-- Days header row -->
+        <div class="days-header" #daysHeader (scroll)="onHeaderScroll($event)">
+          <div class="day-header" *ngFor="let day of calendarDays" [class.weekend]="day.isWeekend" [class.today]="day.isToday">
+            <div class="day-name">{{ day.date | date:'EEE' }}</div>
+            <div class="day-number">{{ day.date | date:'d' }}</div>
+            <div class="day-month" *ngIf="day.date.getDate() === 1 || day.date === calendarDays[0].date">
+              {{ day.date | date:'MMM' }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Scrollable car rows container -->
+        <div class="calendar-rows-container" #rowsContainer (scroll)="onRowsScroll($event)">
+          <div class="car-row" *ngFor="let car of cars">
+            <div class="day-cell" 
+                 *ngFor="let day of calendarDays" 
+                 [class.weekend]="day.isWeekend" 
+                 [class.today]="day.isToday"
+                 [class.booked]="isCarBooked(car.id, day.date)"
+                 [class.active]="getBookingStatus(isCarBooked(car.id, day.date)) === 'active'"
+                 [class.overdue]="getBookingStatus(isCarBooked(car.id, day.date)) === 'overdue'"
+                 [class.closed]="getBookingStatus(isCarBooked(car.id, day.date)) === 'closed'"
+                 (click)="openBookingDialog(car, day.date)">
+              <div class="booking-info" *ngIf="isCarBooked(car.id, day.date) as booking">
+                <span class="customer-name">{{ booking.customerName }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="loading-indicator" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Loading calendar data...</span>
+  </div>
+  
+  <div class="calendar-legend" [class.fullscreen-hidden]="isFullscreen">
+    <div class="legend-item">
+      <div class="legend-color available"></div>
+      <span>Available</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color active"></div>
+      <span>Active Rental</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color overdue"></div>
+      <span>Overdue</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color closed"></div>
+      <span>Closed</span>
+    </div>
+  </div>
+</div>

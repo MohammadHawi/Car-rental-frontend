@@ -22,7 +22,7 @@ export class ContractsComponent {
   statusFilter = "all"
   customers: any[] = [];
   totalCount: number = 0;
-  pageSize: number = 10;
+  pageSize: number = 100;
   currentPage: number = 0;
   filter:any = {};
   Nationalities: any = {}
@@ -38,7 +38,6 @@ export class ContractsComponent {
 
   
   fetchContracts() {
-    console.log("Current Page:", this.currentPage);
     this.dataFetchService
       .getContracts(this.filter,this.currentPage +1 , this.pageSize)
       .subscribe({
@@ -65,7 +64,7 @@ export class ContractsComponent {
   pageRel(): void {
     this.filter = {};
     this.currentPage = 0;
-    this.pageSize = 10;
+    this.pageSize = 100;
     this.applyFilter();
   }
 
@@ -95,6 +94,33 @@ export class ContractsComponent {
       }
     });
   }
+
+  extendContract(contractId: number): void {
+    const dialogRef = this.dialog.open(ReturnContractComponent, {
+      width: '400px',
+      data: { contractId }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.dataSendService.extendContract(contractId, result).subscribe({
+          next: () => {
+            this.snackBar.open("Contract extended successfully", "Close", {
+              duration: 2000,
+            });
+            this.fetchContracts();
+          },
+          error: (error: any) => {
+            this.snackBar.open(error?.error?.message || 'Failed to extend contract', undefined, {
+              verticalPosition: 'top',
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            });
+          },
+        });
+      }
+    });
+  }
   
 
   addContract(): void {
@@ -106,6 +132,12 @@ export class ContractsComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        if (result.pickout instanceof Date) {
+        result.pickout.setHours(12, 0, 0, 0);
+      }
+      if (result.dropin instanceof Date) {
+        result.dropin.setHours(12, 0, 0, 0);
+      }
         this.dataSendService.crtContract(result).subscribe({
           next: (response: any) => {
             this.snackBar.open("Contract added successfully", "Close", {

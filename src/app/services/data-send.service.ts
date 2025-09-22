@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CreateTransaction, Transaction, UpdateTransaction } from '../models/transaction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ export class DataSendService {
   private appconf = {
     apiBaseUrl: 'http://localhost:5008/api'
   };
+  
   constructor(private http: HttpClient) { }
 
   crtCustomer(data: any): Observable<any> {
@@ -59,5 +61,24 @@ export class DataSendService {
     return this.http.post<any>(url, {checkInDate: new Date}, {
       headers: { 'Content-Type': 'application/json' },
     });
+  }
+
+  extendContract(contractId: number, checkInDate: Date): Observable<any> {
+    let url: string = `${this.appconf.apiBaseUrl}/contracts/extend/${contractId}`;
+    return this.http.post<any>(url, {checkInDate: new Date}, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  createTransaction(transaction: any): Observable<Transaction> {
+    return this.http.post<any>(`${this.appconf.apiBaseUrl}/transaction`, transaction);
+  }
+
+  updateTransaction(id: number, transaction: UpdateTransaction): Observable<void> {
+    return this.http.put<any>(`${this.appconf.apiBaseUrl}/transaction/${id}`, transaction);
+  }
+
+  deleteTransaction(id: number): Observable<void> {
+    return this.http.delete<any>(`${this.appconf.apiBaseUrl}/transaction/${id}`);
   }
 }

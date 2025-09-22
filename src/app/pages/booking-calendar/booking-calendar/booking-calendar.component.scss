@@ -1,0 +1,889 @@
+$primary-color: #2c86e4;
+$primary-light: #e0eaf5;
+$secondary-color: #5a6a85;
+$border-color: #e0e0e0;
+$background-color: #f8f9fa;
+$weekend-color: #f5f5f5;
+$today-color: #e3f2fd;
+$available-color: #ffffff;
+$active-color: #c8e6c9;
+$overdue-color: #ffcdd2;
+$closed-color: #e0e0e0;
+$hover-color: #f0f7ff;
+
+.booking-calendar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid $border-color;
+    background-color: white;
+    
+    .calendar-title {
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 500;
+        color: $secondary-color;
+      }
+    }
+    
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      
+      .period-navigation {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .current-period {
+          font-size: 16px;
+          font-weight: 500;
+          color: $secondary-color;
+          min-width: 180px;
+          text-align: center;
+        }
+      }
+      
+      .view-controls {
+        display: flex;
+        gap: 8px;
+        
+        button {
+          border-radius: 20px;
+          
+          &.active {
+            background-color: $primary-light;
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+  
+  .calendar-filters {
+    padding: 16px 24px;
+    border-bottom: 1px solid $border-color;
+    background-color: white;
+    
+    .filter-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      
+      mat-form-field {
+        width: 200px;
+      }
+      
+      .filter-actions {
+        display: flex;
+        gap: 8px;
+      }
+    }
+  }
+  
+  .calendar-scroll-controls {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 24px;
+    background-color: white;
+    border-bottom: 1px solid $border-color;
+  }
+  
+  .calendar-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    .calendar-grid {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      
+      .car-labels-column {
+        width: 200px;
+        flex-shrink: 0;
+        border-right: 1px solid $border-color;
+        background-color: white;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        
+        .car-label-header {
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 500;
+          border-bottom: 1px solid $border-color;
+          background-color: $background-color;
+          position: sticky;
+          top: 0;
+          z-index: 4;
+        }
+        
+        // Add these styles to ensure smooth scrolling synchronization
+// .car-labels-scroll {
+//   flex: 1;
+//   overflow-y: auto;
+//   overflow-x: hidden; // Prevent horizontal scrolling on car labels
+  
+//   // Ensure smooth scrolling
+//   scroll-behavior: smooth;
+  
+//   // Hide scrollbar for a cleaner look (optional)
+//   &::-webkit-scrollbar {
+//     width: 6px;
+//   }
+  
+//   &::-webkit-scrollbar-track {
+//     background: #f1f1f1;
+//     border-radius: 3px;
+//   }
+  
+//   &::-webkit-scrollbar-thumb {
+//     background: #c1c1c1;
+//     border-radius: 3px;
+    
+//     &:hover {
+//       background: #a8a8a8;
+//     }
+//   }
+  
+//   .car-label {
+//     height: 60px;
+//     padding: 8px 16px;
+//     border-bottom: 1px solid $border-color;
+//     display: flex;
+//     align-items: center;
+    
+//     .car-info {
+//       display: flex;
+//       flex-direction: column;
+      
+//       .car-plate {
+//         font-weight: 500;
+//         font-size: 14px;
+//         padding: 4px 8px;
+//         border-radius: 4px;
+//         transition: background-color 0.2s;
+        
+//         &.rented {
+//           background-color: #4caf50;
+//           color: white;
+//         }
+//       }
+      
+//       .car-model {
+//         font-size: 12px;
+//         color: $secondary-color;
+//         margin-top: 2px;
+//       }
+//     }
+//   }
+// }
+
+// Enhanced car rental status colors
+$available-car-color: #e8f5e8;
+$rented-car-color: #4caf50;
+$active-car-color: #2e7d32;
+$overdue-car-color: #f44336;
+$car-text-white: #ffffff;
+$car-text-dark: #333333;
+
+.car-labels-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Ensure smooth scrolling
+  scroll-behavior: smooth;
+  
+  // Hide scrollbar for a cleaner look (optional)
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+  
+  .car-label {
+    height: 60px;
+    padding: 8px 16px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    
+    .car-info {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      
+      .car-plate {
+        font-weight: 500;
+        font-size: 14px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        margin-bottom: 2px;
+        text-align: center;
+        
+        // Default available state
+        &.available {
+          background-color: $available-car-color;
+          color: $car-text-dark;
+          border: 1px solid #c8e6c9;
+        }
+        
+        // Rented state (general)
+        &.rented {
+          background-color: $rented-car-color;
+          color: $car-text-white;
+          box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+        }
+        
+        // Active rental
+        &.active {
+          background-color: $active-car-color;
+          color: $car-text-white;
+          box-shadow: 0 2px 4px rgba(46, 125, 50, 0.3);
+        }
+        
+        // Overdue rental
+        &.overdue {
+          background-color: $overdue-car-color;
+          color: $car-text-white;
+          box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+          animation: pulse 2s infinite;
+        }
+        
+        // Hover effect
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+      }
+      
+      .car-model {
+        font-size: 12px;
+        color: $secondary-color;
+        margin-top: 2px;
+      }
+      
+      .rental-info {
+        font-size: 11px;
+        color: $secondary-color;
+        font-style: italic;
+        margin-top: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.fullscreen-btn {
+  margin-left: 8px;
+  color: $primary-color;
+  
+  &:hover {
+    background-color: $primary-light;
+  }
+}
+
+// Add pulse animation for overdue cars
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Additional styling for better visual hierarchy
+.car-label {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    
+    .car-plate {
+      &.available {
+        background-color: darken($available-car-color, 5%);
+      }
+      
+      &.rented, &.active {
+        background-color: darken($rented-car-color, 5%);
+      }
+      
+      &.overdue {
+        background-color: darken($overdue-car-color, 5%);
+      }
+    }
+  }
+}
+
+// Also update the calendar-rows-container to ensure smooth scrolling
+.calendar-rows-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  
+  // Ensure smooth scrolling
+  scroll-behavior: smooth;
+  
+  // Custom scrollbar styling (optional)
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+  
+  .car-row {
+    display: flex;
+    height: 60px;
+    border-bottom: 1px solid $border-color;
+    
+    .day-cell {
+      min-width: 120px;
+      flex: 1;
+      border-right: 1px solid $border-color;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      position: relative;
+      
+      &.weekend {
+        background-color: $weekend-color;
+      }
+      
+      &.today {
+        background-color: $today-color;
+      }
+      
+      &.available {
+        background-color: $available-color;
+      }
+      
+      &.booked {
+        &.active {
+          background-color: $active-color;
+        }
+        
+        &.overdue {
+          background-color: $overdue-color;
+        }
+        
+        &.closed {
+          background-color: $closed-color;
+        }
+      }
+      
+      &:hover {
+        background-color: $hover-color;
+      }
+      
+      .booking-info {
+        padding: 4px 8px;
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        
+        .customer-name {
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+      }
+      
+      .calendar-grid-content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        
+        .days-header {
+          display: flex;
+          height: 60px;
+          border-bottom: 1px solid $border-color;
+          background-color: $background-color;
+          position: sticky;
+          top: 0;
+          z-index: 2;
+          overflow-x: auto;
+          overflow-y: hidden;
+          flex-shrink: 0;
+          
+          // Hide scrollbar for dates header
+          &::-webkit-scrollbar {
+            display: none;
+          }
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+          
+          .day-header {
+            min-width: 120px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid $border-color;
+            
+            &.weekend {
+              background-color: $weekend-color;
+            }
+            
+            &.today {
+              background-color: $today-color;
+              font-weight: 500;
+            }
+            
+            .day-name {
+              font-size: 12px;
+              color: $secondary-color;
+            }
+            
+            .day-number {
+              font-size: 16px;
+              font-weight: 500;
+            }
+            
+            .day-month {
+              font-size: 12px;
+              color: $secondary-color;
+            }
+          }
+        }
+        
+        .calendar-rows-container {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: auto;
+          
+          .car-row {
+            display: flex;
+            height: 60px;
+            border-bottom: 1px solid $border-color;
+            
+            .day-cell {
+              min-width: 120px;
+              flex: 1;
+              border-right: 1px solid $border-color;
+              cursor: pointer;
+              transition: background-color 0.2s;
+              position: relative;
+              
+              &.weekend {
+                background-color: $weekend-color;
+              }
+              
+              &.today {
+                background-color: $today-color;
+              }
+              
+              &.available {
+                background-color: $available-color;
+              }
+              
+              &.booked {
+                &.active {
+                  background-color: $active-color;
+                }
+                
+                &.overdue {
+                  background-color: $overdue-color;
+                }
+                
+                &.closed {
+                  background-color: $closed-color;
+                }
+              }
+              
+              &:hover {
+                background-color: $hover-color;
+              }
+              
+              .booking-info {
+                padding: 4px 8px;
+                font-size: 12px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                
+                .customer-name {
+                  font-weight: 500;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    
+    span {
+      color: $secondary-color;
+    }
+  }
+  
+  .calendar-legend {
+    display: flex;
+    gap: 24px;
+    padding: 16px 24px;
+    border-top: 1px solid $border-color;
+    background-color: white;
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1px solid $border-color;
+        
+        &.available {
+          background-color: $available-color;
+        }
+        
+        &.active {
+          background-color: $active-color;
+        }
+        
+        &.overdue {
+          background-color: $overdue-color;
+        }
+        
+        &.closed {
+          background-color: $closed-color;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .booking-calendar-container {
+
+    .calendar-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      
+      .calendar-controls {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+    }
+    
+    .calendar-filters {
+      .filter-row {
+        flex-direction: column;
+        align-items: flex-start;
+        
+        mat-form-field {
+          width: 100%;
+        }
+      }
+    }
+    &.fullscreen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background-color: white;
+    
+    .calendar-header {
+      padding: 12px 24px; // Reduced padding in fullscreen
+      border-bottom: 2px solid $primary-color;
+      
+      .calendar-title h1 {
+        font-size: 20px; // Slightly smaller title in fullscreen
+      }
+    }
+    
+    .calendar-wrapper {
+      flex: 1;
+      overflow: hidden;
+      
+      .calendar-grid {
+        height: 100%;
+        
+        .car-labels-column {
+          .car-label-header {
+            height: 50px; // Slightly smaller header in fullscreen
+          }
+          
+          .car-labels-scroll {
+            .car-label {
+              height: 50px; // Smaller car labels in fullscreen
+              
+              .car-info {
+                .car-plate {
+                  font-size: 12px;
+                  padding: 3px 6px;
+                }
+                
+                .car-model {
+                  font-size: 10px;
+                }
+                
+                .rental-info {
+                  font-size: 9px;
+                }
+              }
+            }
+          }
+        }
+        
+        .calendar-grid-content {
+          .days-header {
+            height: 50px; // Smaller header in fullscreen
+            
+            .day-header {
+              .day-name {
+                font-size: 10px;
+              }
+              
+              .day-number {
+                font-size: 14px;
+              }
+              
+              .day-month {
+                font-size: 10px;
+              }
+            }
+          }
+          
+          .calendar-rows-container {
+            .car-row {
+              height: 50px; // Smaller rows in fullscreen
+              
+              .day-cell {
+                min-width: 100px; // Smaller cells in fullscreen
+                
+                .booking-info {
+                  padding: 2px 6px;
+                  font-size: 10px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  }
+  .fullscreen-hidden {
+  display: none !important;
+}
+
+// Enhanced fullscreen experience
+.booking-calendar-container.fullscreen-mode {
+  // Add smooth transitions
+  transition: all 0.3s ease;
+  
+  // Better scroll performance in fullscreen
+  .calendar-rows-container {
+    // Optimize scrolling performance
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: scroll-position;
+    
+    // Smoother scrollbars in fullscreen
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+      
+      &:hover {
+        background: #555;
+      }
+    }
+  }
+  
+  // Enhanced car labels in fullscreen
+  .car-labels-scroll {
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+      
+      &:hover {
+        background: #555;
+      }
+    }
+  }
+  
+  // Add subtle animation for fullscreen entry
+  .calendar-grid {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+}
+
+// Keyframe for smooth fullscreen transition
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Responsive fullscreen adjustments
+@media (max-width: 768px) {
+  .booking-calendar-container.fullscreen-mode {
+    .calendar-header {
+      padding: 8px 16px;
+      
+      .calendar-controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        
+        .period-navigation {
+          .current-period {
+            font-size: 14px;
+            min-width: 140px;
+          }
+        }
+        
+        .view-controls {
+          button {
+            padding: 4px 8px;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+    
+    .car-labels-column {
+      width: 150px; // Narrower on mobile
+    }
+    
+    .calendar-grid-content {
+      .days-header .day-header {
+        min-width: 80px; // Narrower cells on mobile
+      }
+      
+      .calendar-rows-container .car-row .day-cell {
+        min-width: 80px;
+      }
+    }
+  }
+}
+
+// Add ESC key hint (optional)
+.booking-calendar-container.fullscreen-mode {
+  &::before {
+    content: "Press ESC to exit fullscreen";
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 10000;
+    opacity: 0;
+    animation: showHint 0.5s ease-in-out 1s both;
+  }
+}
+
+@keyframes showHint {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+}

@@ -1,0 +1,253 @@
+.transaction-form-container {
+    min-width: 500px;
+    max-width: 600px;
+  }
+  
+  mat-dialog-title {
+    display: flex;
+    align-items: center;
+    color: #2c86e4;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    gap: 16px;
+  }
+  
+  .form-row {
+    margin-bottom: 16px;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .type-option {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    
+    &.income {
+      background-color: #e6f7ed;
+      color: #4caf50;
+    }
+    
+    &.expense {
+      background-color: #feeceb;
+      color: #f44336;
+    }
+  }
+  
+  .related-entities-section {
+    margin-top: 24px;
+    border-top: 1px solid #e0eaf5;
+    padding-top: 16px;
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      
+      h3 {
+        margin: 0;
+        color: #5a6a85;
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  .related-entity-card {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #e0eaf5;
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      mat-icon {
+        color: #2c86e4;
+        margin-right: 8px;
+      }
+      
+      h4 {
+        margin: 0;
+        color: #2c86e4;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+    
+    .card-content {
+      p {
+        margin: 4px 0;
+        font-size: 13px;
+        color: #5a6a85;
+        
+        strong {
+          color: #2c3e50;
+        }
+      }
+    }
+  }
+  
+  mat-dialog-actions {
+    padding: 16px 0;
+    margin-top: 16px;
+    border-top: 1px solid #e0eaf5;
+    
+    button {
+      min-width: 100px;
+      
+      mat-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .category-option {
+    display: flex;
+    align-items: center;
+    
+    mat-icon {
+      margin-right: 8px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+}
+
+  // Add this to the component's SCSS file
+.validation-summary {
+    background-color: #feeceb;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    
+    .validation-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      color: #f44336;
+      font-weight: 500;
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+    
+    ul {
+      margin: 0;
+      padding-left: 32px;
+      
+      li {
+        color: #f44336;
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+    }
+
+    // Add this to the component's SCSS file
+.preview-section {
+    margin-top: 24px;
+    
+    button {
+      margin-bottom: 16px;
+    }
+  }
+  
+  .transaction-preview {
+    h3 {
+      color: #5a6a85;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+  }
+  
+  .preview-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    
+    .preview-header {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      &.income {
+        background-color: #e6f7ed;
+        
+        .preview-type {
+          color: #4caf50;
+        }
+        
+        .preview-amount {
+          color: #4caf50;
+        }
+      }
+      
+      &.expense {
+        background-color: #feeceb;
+        
+        .preview-type {
+          color: #f44336;
+        }
+        
+        .preview-amount {
+          color: #f44336;
+        }
+      }
+      
+      .preview-type {
+        font-weight: 500;
+        font-size: 16px;
+      }
+      
+      .preview-amount {
+        font-weight: 700;
+        font-size: 18px;
+      }
+    }
+    
+    .preview-body {
+      padding: 16px;
+      
+      .preview-row {
+        display: flex;
+        margin-bottom: 8px;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+        
+        .label {
+          width: 100px;
+          color: #5a6a85;
+          font-weight: 500;
+          flex-shrink: 0;
+        }
+        
+        .value {
+          color: #2c3e50;
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { FinancialSummary, Transaction, TransactionType } from '../models/transaction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -85,11 +86,70 @@ export class DataFetchService {
     return this.http.get(`${this.apiUrl}/customers/search?name=${name}`);
   }
   
-  getContractById(contractId: number): Observable<any> {
+  getContractById(contractId: any): Observable<any> {
     return this.http.get(`${this.apiUrl}/contracts/${contractId}`);
+  }
+
+  getCarById(carId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/cars/${carId}`);
   }
   
   getReservations(): Observable<any> {
     return this.http.get(`${this.apiUrl}/reservations`);
+  }
+
+  getAllTransactions(): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(`${this.apiUrl}/transaction`);
+  }
+
+  getIncomeTransactions(): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(`${this.apiUrl}/income`);
+  }
+
+  getExpenseTransactions(): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(`${this.apiUrl}/expenses`);
+  }
+
+  getTransaction(id: number): Observable<Transaction> {
+    return this.http.get<Transaction>(`${this.apiUrl}/${id}`);
+  }
+
+  getFinancialSummary(startDate?: Date, endDate?: Date): Observable<FinancialSummary> {
+    let params = new HttpParams();
+    
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+    
+    return this.http.get<FinancialSummary>(`${this.apiUrl}/transaction/summary`, { params });
+  }
+
+  getCategoryName(category: number): string {
+    const categories = {
+      1: 'Rental Payment',
+      2: 'Deposit',
+      3: 'Late Fee',
+      4: 'Damage Fee',
+      5: 'Maintenance',
+      6: 'Insurance',
+      7: 'Fuel',
+      8: 'Taxes',
+      9: 'Salaries',
+      10: 'Utilities',
+      11: 'Marketing',
+      12: 'Office Costs',
+      13: 'Vehicle Purchase',
+      14: 'Other'
+    };
+    
+    return categories[category as keyof typeof categories] || 'Unknown';
+  }
+
+  getTypeName(type: TransactionType): string {
+    return TransactionType[type];
   }
 }

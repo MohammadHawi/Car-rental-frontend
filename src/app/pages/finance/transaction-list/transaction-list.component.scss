@@ -1,0 +1,82 @@
+.page-container {
+    padding: 16px;
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .page-title {
+    color: #2c86e4;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .filters-container {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .search-field {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    gap: 16px;
+  }
+  
+  .transactions-table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+  
+  .transactions-table {
+    width: 100%;
+  }
+  
+  .transaction-type {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    
+    &.income {
+      background-color: #e6f7ed;
+      color: #4caf50;
+    }
+    
+    &.expense {
+      background-color: #feeceb;
+      color: #f44336;
+    }
+  }
+  
+  .income-amount {
+    color: #4caf50;
+    font-weight: 500;
+  }
+  
+  .expense-amount {
+    color: #f44336;
+    font-weight: 500;
+  }
+  
+  .no-data {
+    padding: 24px;
+    text-align: center;
+    color: #5a6a85;
+  }

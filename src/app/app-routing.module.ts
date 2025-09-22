@@ -5,6 +5,12 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { VehiclesComponent } from './pages/vehicles/vehicles.component';
 import { CustomersComponent } from './pages/customers/customers.component';
 import { ContractsComponent } from './pages/contracts/contracts.component';
+import { FinanceDashboardComponent } from './pages/finance/finance-dashboard/finance-dashboard.component';
+import { TransactionFormComponent } from './pages/finance/transaction-form/transaction-form.component';
+import { TransactionsListComponent } from './pages/finance/transaction-list/transaction-list.component';
+import { BookingCalendarComponent } from './pages/booking-calendar/booking-calendar/booking-calendar.component';
+import { TaskListComponent } from './pages/tasks/task-list/task-list.component';
+import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed-tasks.component';
 // import { ContractsComponent } from './pages/contracts/contracts.component';
 
 const routes: Routes = [
@@ -13,7 +19,14 @@ const routes: Routes = [
   { path: 'cars', component: VehiclesComponent },
   { path: 'customers', component: CustomersComponent },
   { path: 'contracts', component: ContractsComponent },
-  { path: '**', redirectTo: '/dashboard' }
+  { path: 'finance', component: FinanceDashboardComponent },
+  { path: 'finance/create', component: TransactionFormComponent },
+  { path: 'finance/list', component: TransactionsListComponent },
+  
+  { path: 'booking-calendar', component: BookingCalendarComponent },
+  { path: 'tasks/active', component: TaskListComponent },
+  { path: 'tasks/completed', component: CompletedTasksComponent },
+  { path: '**', redirectTo: '/dashboard' },
 ];
 
 @NgModule({
