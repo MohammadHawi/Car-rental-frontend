@@ -11,12 +11,14 @@ import { TransactionsListComponent } from './pages/finance/transaction-list/tran
 import { BookingCalendarComponent } from './pages/booking-calendar/booking-calendar/booking-calendar.component';
 import { TaskListComponent } from './pages/tasks/task-list/task-list.component';
 import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed-tasks.component';
+import { CarHistoryComponent } from './pages/vehicles/car-history/car-history.component';
 // import { ContractsComponent } from './pages/contracts/contracts.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'cars', component: VehiclesComponent },
+  { path: 'cars/:id/history', component: CarHistoryComponent },
   { path: 'customers', component: CustomersComponent },
   { path: 'contracts', component: ContractsComponent },
   { path: 'finance', component: FinanceDashboardComponent },

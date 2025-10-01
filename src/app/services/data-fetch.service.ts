@@ -114,6 +114,10 @@ export class DataFetchService {
     return this.http.get<Transaction>(`${this.apiUrl}/${id}`);
   }
 
+  getCarHistory(carId: number): Observable<any> {
+     return this.http.get<any>(`${this.apiUrl}/cars/${carId}/history`);
+  }
+
   getFinancialSummary(startDate?: Date, endDate?: Date): Observable<FinancialSummary> {
     let params = new HttpParams();
     
@@ -152,4 +156,7 @@ export class DataFetchService {
   getTypeName(type: TransactionType): string {
     return TransactionType[type];
   }
+
+  
+
 }

@@ -23,6 +23,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatMenuModule } from '@angular/material/menu';
+
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -53,6 +55,7 @@ import { NewBookingComponent } from './pages/booking-calendar/new-booking/new-bo
 import { TaskFormComponent } from './pages/tasks/task-form/task-form.component';
 import { TaskListComponent } from './pages/tasks/task-list/task-list.component';
 import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed-tasks.component';
+import { CarHistoryComponent } from './pages/vehicles/car-history/car-history.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +79,8 @@ import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed
     NewBookingComponent,
     TaskFormComponent,
     TaskListComponent,
-    CompletedTasksComponent
+    CompletedTasksComponent,
+    CarHistoryComponent,
     ],
   imports: [
     BrowserModule,
@@ -110,7 +114,8 @@ import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed
     MatSnackBarModule,
     MatTooltipModule,
     MatTabsModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatMenuModule
     
   ],
   providers: [],

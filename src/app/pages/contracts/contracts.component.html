@@ -1,155 +1,249 @@
-<div class="customers-container">
+<div class="app-container">
   <!-- Header Section -->
   <div class="header-actions">
-    <h1 class="title">Contracts</h1>
+    <div>
+      <h1 class="contracts-title">Contracts</h1>
+      <h3 class="contracts-subtitle">Total contracts: {{totalCount}}</h3>
+      <!-- <h3 class="contracts-subtitle">Overdue contracts: {{getOverdueContractsCount()}}</h3> -->
+    </div>
+    
     <div class="filter-container">
-      <mat-form-field appearance="fill" class="filter-item">
-        <mat-label>Search</mat-label>
-        <input matInput [(ngModel)]="filter['search_query']" placeholder="Search contracts..." />
-        <button mat-icon-button color="primary" (click)="applyFilter()" class="search-button" [disabled]="!filter['search_query']">
-          <mat-icon matSuffix>search</mat-icon>
+      <mat-form-field appearance="outline">
+        <mat-label>Search Contracts</mat-label>
+        <input matInput 
+               [(ngModel)]="filter['search_query']" 
+               (keyup.enter)="applyFilter()" 
+               placeholder="Search by name, plate, ID...">
+        <mat-icon matSuffix *ngIf="!filter['search_query']">search</mat-icon>
+        <button mat-icon-button 
+                matSuffix 
+                *ngIf="filter['search_query']"
+                (click)="clearSearch()"
+                matTooltip="Clear search">
+          <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-button color="primary" (click)="pageRel()">
-        <mat-icon style="font-size: 21px;">refresh</mat-icon>
+      
+      <button mat-raised-button 
+              color="primary" 
+              (click)="applyFilter()"
+              [disabled]="!filter['search_query']">
+        <mat-icon>search</mat-icon>
+        Search
       </button>
     </div>
-    <!-- <div class="search-box">
-      <mat-form-field appearance="outline">
-        <mat-label>Search tasks</mat-label>
-        <input matInput (input)="onSearchChange($event)" [value]="filterOptions.searchText">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
-    </div> -->
-    <button mat-raised-button color="primary" (click)="addContract()" class="add-btn">
-      <mat-icon>add</mat-icon>
-      Add Contract
-    </button>
-  </div>
-
-  <div class="table-wrapper">
-    <div class="table-container mat-elevation-z4">
-      <div class="table-responsive">
-        <table mat-table [dataSource]="dataSource" matSort class="mat-table">
-          <!-- Column definitions unchanged -->
-          
-  
-            <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-              <td mat-cell *matCellDef="let contract">{{contract.id}}</td>
-            </ng-container>
-      
-            <ng-container matColumnDef="carPlate">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Car Plate</th>
-              <td mat-cell *matCellDef="let contract">{{contract.carPlate}}</td>
-            </ng-container>
-      
-            <ng-container matColumnDef="customerName">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-              <td mat-cell *matCellDef="let contract">{{contract.customerName}}</td> 
-            </ng-container>
-      
-            <ng-container matColumnDef="checkOut">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Pick Out</th>
-              <td mat-cell *matCellDef="let contract">{{contract.checkOut}}</td>
-            </ng-container>
-      
-            <ng-container matColumnDef="checkIn">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Drop In</th>
-              <td mat-cell *matCellDef="let contract">{{contract.checkIn}}</td>
-            </ng-container>
-      
-            <ng-container matColumnDef="price">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
-              <td mat-cell *matCellDef="let contract">{{contract.price}}</td>
-            </ng-container>
     
-            <ng-container matColumnDef="total">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
-              <td mat-cell *matCellDef="let contract">{{contract.total}}</td>
-            </ng-container>
-    
-            <ng-container matColumnDef="paid">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Paid</th>
-              <td mat-cell *matCellDef="let contract">{{contract.paid}}</td>
-            </ng-container>
-    
-            <ng-container matColumnDef="balance">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
-              <td mat-cell *matCellDef="let contract">{{contract.balance}}</td>
-            </ng-container>
-    
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-              <td mat-cell *matCellDef="let contract">
-                <ng-template [ngIf]="contract.status == '1'">
-                  <span class="status-badge active" >
-                    Active
-                  </span>
-                </ng-template>
-                <ng-template [ngIf]="contract.status == '2'">
-                  <span class="status-badge pending" >
-                    Overdue
-                  </span>
-                </ng-template>
-                </td>
-            </ng-container>
-    
-    
+    <div class="action-section">
+      <button mat-raised-button color="warn" (click)="pageRel()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
       
-            <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Actions</th>
-              <td mat-cell *matCellDef="let contract">
-                <button mat-icon-button color="primary" (click)="editContract(contract.id)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="primary" (click)="checkIn(contract.id)" >
-                  <mat-icon>done</mat-icon>
-                </button>
-                <button mat-icon-button color="primary" (click)="extendContract(contract.id)" >
-                  <mat-icon>add_circle_outline</mat-icon>
-                </button>
-                <!-- <button mat-icon-button color="primary" (click)="viewContract(contract.id)">
-                  <mat-icon>visibility</mat-icon>
-                </button>
-                <button mat-icon-button color="primary" (click)="viewCustomer(contract.id)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="primary" (click)="viewCar(contract.id)">
-                  <mat-icon>edit</mat-icon>
-                </button> -->
-                <a mat-icon-button color="primary"
-                  [href]="'https://wa.me/' + contract.phoneNumber"
-                  target="_blank"
-                  matTooltip="Chat on WhatsApp">
-                  <mat-icon>chat</mat-icon>
-                </a>
-                <button mat-icon-button color="warn" (click)="deleteContract(contract.id)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-                
-              </td>
-            </ng-container>
-      
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      
-            <!-- No Data Message -->
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="5">No data matching the filter</td>
-            </tr>
-          </table>
-        
-      </div>
-
-      <mat-paginator
-        [length]="totalCount"
-        [pageSize]="pageSize"
-        [pageIndex]="currentPage"
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        (page)="onPageChange($event)">
-      </mat-paginator>
+      <button mat-raised-button color="primary" (click)="addContract()">
+        <mat-icon>add</mat-icon>
+        Add Contract
+      </button>
     </div>
   </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="contracts-loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading contracts...</p>
+  </div>
+
+  <!-- Contracts Table -->
+  <div class="table-wrapper" *ngIf="!isLoading">
+    <table mat-table [dataSource]="dataSource" class="app-table wide-table">
+      
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>
+          <strong>ID</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="app-id">#{{contract.id}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Car Plate Column -->
+      <ng-container matColumnDef="carPlate">
+        <th mat-header-cell *matHeaderCellDef >
+          <strong>Car Plate</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="app-plate">{{contract.carPlate}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Customer Name Column -->
+      <ng-container matColumnDef="customerName">
+        <th mat-header-cell *matHeaderCellDef>
+          <strong>Customer</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="app-customer-name">{{contract.customerName}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Check Out Column -->
+      <ng-container matColumnDef="checkOut">
+        <th mat-header-cell *matHeaderCellDef>
+          <strong>Pick Out</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="app-date">{{contract.checkOut | date:'MMM d, y'}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Check In Column -->
+      <ng-container matColumnDef="checkIn">
+        <th mat-header-cell *matHeaderCellDef >
+          <strong>Drop In</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="app-date">{{contract.checkIn | date:'MMM d, y'}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Price Column -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef >
+          <strong>Price</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="contracts-price">${{contract.price | number:'1.2-2'}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Total Column -->
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef >
+          <strong>Total</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="app-total">${{contract.total | number:'1.2-2'}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Paid Column -->
+      <ng-container matColumnDef="paid">
+        <th mat-header-cell *matHeaderCellDef >
+          <strong>Paid</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="contracts-paid">${{contract.paid | number:'1.2-2'}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Balance Column -->
+      <ng-container matColumnDef="balance">
+        <th mat-header-cell *matHeaderCellDef >
+          <strong>Balance</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <span class="contracts-balance" 
+                [class.contracts-balance-overdue]="contract.balance > 0">
+            ${{contract.balance | number:'1.2-2'}}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef >
+          <strong>Status</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <div class="status-container">
+            <span class="status-badge active" *ngIf="contract.status == '1'">
+              Active
+            </span>
+            <span class="status-badge overdue" *ngIf="contract.status == '2'">
+              Overdue
+            </span>
+            <span class="status-badge completed" *ngIf="contract.status == '3'">
+              Ending Today
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+          <strong>Actions</strong>
+        </th>
+        <td mat-cell *matCellDef="let contract">
+          <div class="action-buttons">
+            <!-- Primary Actions -->
+            <button mat-icon-button 
+                    color="primary" 
+                    (click)="editContract(contract.id)"
+                    matTooltip="Edit Contract">
+              <mat-icon>edit</mat-icon>
+            </button>
+            
+            <button mat-icon-button 
+                    color="accent" 
+                    (click)="checkIn(contract.id)"
+                    matTooltip="Check In">
+              <mat-icon>done</mat-icon>
+            </button>
+            
+            <!-- More Actions Menu -->
+            <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More Actions">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="extendContract(contract.id)">
+                <mat-icon>add_circle_outline</mat-icon>
+                <span>Extend Contract</span>
+              </button>
+              
+              <a mat-menu-item
+                 [href]="'https://wa.me/' + contract.phoneNumber"
+                 target="_blank">
+                <mat-icon>chat</mat-icon>
+                <span>WhatsApp</span>
+              </a>
+              
+              <mat-divider></mat-divider>
+              
+              <button mat-menu-item 
+                      (click)="deleteContract(contract.id)" 
+                      class="contracts-delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Delete Contract</span>
+              </button>
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Table Rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+
+    <!-- No Data Message -->
+    <div *ngIf="dataSource.data.length === 0" class="no-data">
+      <mat-icon>description</mat-icon>
+      <h3>No contracts found</h3>
+      <p>Try adjusting your search criteria or add a new contract.</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <mat-paginator 
+    *ngIf="!isLoading && dataSource.data.length > 0"
+    [length]="totalCount"
+    [pageSize]="pageSize"
+    [pageIndex]="currentPage"
+    [pageSizeOptions]="[5, 10, 25, 50, 100]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons
+    class="table-paginator">
+  </mat-paginator>
 </div>

@@ -1,61 +1,61 @@
-.customers-container {
-    padding: 1rem;
-  }
+// .customers-container {
+//     padding: 1rem;
+//   }
   
-  .header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-    gap: 1rem;
-  }
+//   .header-actions {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     flex-wrap: wrap;
+//     margin-bottom: 1rem;
+//     gap: 1rem;
+//   }
   
-  .filter-container {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+//   .filter-container {
+//     display: flex;
+//     align-items: center;
+//     flex-wrap: wrap;
+//     gap: 0.5rem;
+//   }
   
-  .filter-item {
-    flex-grow: 1;
-    min-width: 200px;
-  }
+//   .filter-item {
+//     flex-grow: 1;
+//     min-width: 200px;
+//   }
   
-  .add-btn {
-    white-space: nowrap;
-  }
+//   .add-btn {
+//     white-space: nowrap;
+//   }
   
-  .table-wrapper {
-    overflow-x: auto;
-  }
+//   .table-wrapper {
+//     overflow-x: auto;
+//   }
   
-  .table-responsive {
-    min-width: 800px;
-  }
+//   .table-responsive {
+//     min-width: 800px;
+//   }
   
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .header-actions {
-      flex-direction: column;
-      align-items: stretch;
-    }
+//   /* Responsive adjustments */
+//   @media (max-width: 768px) {
+//     .header-actions {
+//       flex-direction: column;
+//       align-items: stretch;
+//     }
   
-    .filter-container {
-      flex-direction: column;
-      align-items: stretch;
-      width: 100%;
-    }
+//     .filter-container {
+//       flex-direction: column;
+//       align-items: stretch;
+//       width: 100%;
+//     }
   
-    .filter-item,
-    .add-btn {
-      width: 100%;
-    }
+//     .filter-item,
+//     .add-btn {
+//       width: 100%;
+//     }
   
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-    }
-  }
+//     .table-responsive {
+//       width: 100%;
+//       overflow-x: auto;
+//     }
+//   }
   

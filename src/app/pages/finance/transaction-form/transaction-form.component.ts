@@ -64,30 +64,30 @@ export class TransactionFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<TransactionFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { transaction: Transaction },
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private datafetchservice: DataFetchService,
     private datasendservice: DataSendService,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.isEditMode = !!this.data.transaction;
+    this.isEditMode = !!this.data;
     this.loading = true;
     
     // Initialize form with default values
     this.transactionForm = this.fb.group({
-      type: [{ value: this.isEditMode ? this.data.transaction.type : TransactionType.Income, disabled: this.isEditMode }, Validators.required],
-      category: [this.isEditMode ? this.data.transaction.category : '', Validators.required],
-      amount: [this.isEditMode ? this.data.transaction.amount : '', [Validators.required, Validators.min(0.01)]],
-      date: [this.isEditMode ? new Date(this.data.transaction.date) : new Date(), Validators.required],
-      description: [this.isEditMode ? this.data.transaction.description : ''],
-      contractId: [this.isEditMode ? this.data.transaction.contractId : null],
-      carId: [this.isEditMode ? this.data.transaction.carId : null]
+      type: [{ value: this.isEditMode ? this.data.type : TransactionType.Income, disabled: this.isEditMode }, Validators.required],
+      category: [this.isEditMode ? this.data.category : '', Validators.required],
+      amount: [this.isEditMode ? this.data.amount : '', [Validators.required, Validators.min(0.01)]],
+      date: [this.isEditMode ? new Date(this.data.date) : new Date(), Validators.required],
+      description: [this.isEditMode ? this.data.description : ''],
+      contractId: [this.isEditMode ? this.data.contractId : null],
+      carId: [this.isEditMode ? this.data.carId : null]
     });
     
     if (this.isEditMode) {
-      this.transactionId = this.data.transaction.id;
-      this.updateCategoriesForType(this.data.transaction.type);
+      this.transactionId = this.data.id;
+      this.updateCategoriesForType(this.data.type);
     } else {
       this.updateCategoriesForType(TransactionType.Income);
     }
@@ -102,8 +102,8 @@ export class TransactionFormComponent implements OnInit {
         this.contracts = contracts.contracts;
   
         // Set initial input display if editing
-        if (this.isEditMode && this.data.transaction.carId) {
-          const selected = this.cars.find(car => car.id === this.data.transaction.carId);
+        if (this.isEditMode && this.data.carId) {
+          const selected = this.cars.find(car => car.id === this.data.carId);
           if (selected) {
             this.carInputControl.setValue(this.getCarDisplayName(selected));
           }
