@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataFetchService } from '../../../services/data-fetch.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-car-history',
@@ -19,7 +20,8 @@ export class CarHistoryComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private dataFetchService: DataFetchService
+    private dataFetchService: DataFetchService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -42,5 +44,9 @@ export class CarHistoryComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }

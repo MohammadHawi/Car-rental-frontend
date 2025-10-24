@@ -60,6 +60,27 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  deleteAll(): void {
+    if (!this.tasks.length || this.isLoading) {
+      return;
+    }
+    if (!confirm('Delete ALL active tasks? This cannot be undone.')) {
+      return;
+    }
+    this.isLoading = true;
+    this.taskService.deleteAllActiveTasks().subscribe(
+      () => {
+        this.snackBar.open('All active tasks deleted', 'Close', { duration: 3000 });
+        this.loadTasks();
+      },
+      (error) => {
+        console.error('Error deleting all tasks', error);
+        this.snackBar.open('Error deleting tasks', 'Close', { duration: 3000 });
+        this.isLoading = false;
+      }
+    );
+  }
+
   completeTask(task: Task, event: Event): void {
     event.stopPropagation();
     this.isLoading = true;

@@ -1,0 +1,588 @@
+.view-contract-container {
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  min-height: calc(100vh - 64px);
+  background-color: #f8f9fa;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+
+  p {
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+.contract-content {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Header Section
+.contract-header {
+  background: linear-gradient(135deg, #5c9dff 0%, #2f318a 100%);
+  padding: 32px 40px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    button {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    .contract-title {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .contract-subtitle {
+      margin: 8px 0 0 0;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .subtitle-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    button {
+      background-color: white;
+      color: #667eea;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      mat-icon {
+        margin-right: 6px;
+      }
+    }
+
+    .mat-mdc-icon-button {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+}
+
+// Status Banner
+.status-banner {
+  padding: 20px 40px;
+  border-left: 5px solid;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  .status-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    mat-icon {
+      font-size: 28px;
+      height: 28px;
+      width: 28px;
+    }
+
+    div {
+      flex: 1;
+    }
+
+    strong {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 15px;
+      margin-left: 8px;
+      opacity: 0.9;
+    }
+  }
+
+  &.status-active {
+    background: linear-gradient(to right, #e8f5e9, #f1f8f4);
+    border-left-color: #4caf50;
+    color: #2e7d32;
+
+    mat-icon {
+      color: #4caf50;
+    }
+  }
+
+  &.status-overdue {
+    background: linear-gradient(to right, #ffebee, #fff5f5);
+    border-left-color: #f44336;
+    color: #c62828;
+
+    mat-icon {
+      color: #f44336;
+    }
+  }
+
+  &.status-completed {
+    background: linear-gradient(to right, #e3f2fd, #f0f7ff);
+    border-left-color: #2196f3;
+    color: #1565c0;
+
+    mat-icon {
+      color: #2196f3;
+    }
+  }
+
+  &.status-unknown {
+    background: linear-gradient(to right, #fafafa, #f5f5f5);
+    border-left-color: #9e9e9e;
+    color: #616161;
+
+    mat-icon {
+      color: #9e9e9e;
+    }
+  }
+}
+
+// Content Grid
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 32px 40px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e8eaf6;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  mat-card-header {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px 24px;
+    margin: 0;
+    margin-bottom: 0 !important;
+
+    .card-icon {
+      background: linear-gradient(135deg, #667eea 0%, #021e9c 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      height: 48px;
+      width: 48px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    mat-card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 0;
+    }
+  }
+
+  mat-card-content {
+    padding: 24px !important;
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      &:first-child {
+        padding-top: 0;
+      }
+
+      .label {
+        font-weight: 600;
+        color: #5f6368;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .value {
+        font-weight: 500;
+        color: #202124;
+        text-align: right;
+        font-size: 15px;
+
+        &.highlight {
+          color: #667eea;
+          font-weight: 700;
+          font-size: 18px;
+        }
+      }
+
+      &.balance-row {
+        margin-top: 16px;
+        padding-top: 20px;
+        border-top: 2px solid #e8eaf6;
+
+        .label {
+          font-size: 17px;
+          font-weight: 700;
+          color: #2c3e50;
+        }
+
+        .value {
+          font-size: 22px;
+          font-weight: 700;
+        }
+      }
+    }
+
+    mat-divider {
+      margin: 16px 0;
+      border-top-color: #e8eaf6;
+    }
+  }
+
+  &.financial-card {
+    border: 2px solid #e8eaf6;
+    
+    mat-card-header {
+      background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+
+      .card-icon {
+        background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+        box-shadow: 0 4px 8px rgba(253, 121, 168, 0.3);
+      }
+    }
+
+    .total-amount {
+      color: #667eea;
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .paid-amount {
+      color: #00b894;
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .balance-amount {
+      color: #fdcb6e;
+      
+      &.overdue {
+        color: #d63031;
+      }
+    }
+  }
+}
+
+// Action Footer
+.action-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+
+  .footer-right {
+    display: flex;
+    gap: 12px;
+  }
+
+  button {
+    font-weight: 600;
+    padding: 0 24px;
+    height: 42px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
+    mat-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+// Error State
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  gap: 20px;
+  text-align: center;
+  padding: 40px;
+
+  mat-icon {
+    font-size: 80px;
+    height: 80px;
+    width: 80px;
+    color: #f44336;
+    opacity: 0.8;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+  }
+
+  p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 16px;
+    max-width: 400px;
+  }
+
+  button {
+    margin-top: 16px;
+    font-weight: 600;
+  }
+}
+
+// Menu Actions
+.delete-action {
+  color: #f44336 !important;
+
+  mat-icon {
+    color: #f44336 !important;
+  }
+
+  &:hover {
+    background-color: #ffebee !important;
+  }
+}
+
+// Print Styles
+@media print {
+  .contract-header .header-actions,
+  .action-footer,
+  button {
+    display: none !important;
+  }
+
+  .view-contract-container {
+    padding: 0;
+    background-color: white;
+  }
+
+  .contract-header {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+
+    .contract-title,
+    .contract-subtitle {
+      color: black !important;
+    }
+  }
+
+  .status-banner {
+    background: white !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .info-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+
+    mat-card-header {
+      background: white !important;
+      border-bottom: 1px solid #ddd !important;
+    }
+  }
+
+  .content-grid {
+    padding: 20px;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .contract-header {
+    padding: 24px 20px;
+
+    .header-left {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .contract-title {
+        font-size: 24px;
+      }
+    }
+
+    .header-actions {
+      width: 100%;
+      justify-content: flex-start;
+      margin-top: 12px;
+
+      button {
+        flex: 1;
+        min-width: auto;
+      }
+    }
+  }
+
+  .status-banner {
+    padding: 16px 20px;
+
+    .status-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .action-footer {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px;
+
+    .footer-right {
+      width: 100%;
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    > button:first-child {
+      width: 100%;
+    }
+  }
+
+  .info-card {
+    mat-card-header {
+      padding: 16px;
+    }
+
+    mat-card-content {
+      padding: 16px !important;
+
+      .info-row {
+        padding: 12px 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+
+        .value {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+
+// Smooth scrolling
+html {
+  scroll-behavior: smooth;
+}
+
+// Custom scrollbar
+.view-contract-container {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+
+    &:hover {
+      background: #555;
+    }
+  }
+}

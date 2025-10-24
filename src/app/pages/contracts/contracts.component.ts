@@ -10,6 +10,7 @@ import { NewcontractComponent } from './newcontract/newcontract.component';
 import { EditContractComponent } from './editcontract/editcontract.component';
 import { ReturnContractComponent } from './return-contract/return-contract.component';
 import { TransactionFormComponent } from '../finance/transaction-form/transaction-form.component';
+import { TransactionCategory, TransactionType } from '../../models/transaction.model';
 
 @Component({
   selector: 'app-contracts',
@@ -23,7 +24,7 @@ export class ContractsComponent {
   statusFilter = "all"
   customers: any[] = [];
   totalCount: number = 0;
-  pageSize: number = 100;
+  pageSize: number = 110;
   currentPage: number = 0;
   filter:any = {};
   private searchTimeout: any;
@@ -70,10 +71,12 @@ export class ContractsComponent {
     this.pageSize = 100;
     this.applyFilter();
   }
+
   clearSearch(): void {
     this.filter['search_query'] = '';
     this.applyFilter();
   }
+
   onSearchInput(): void {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
@@ -85,26 +88,33 @@ export class ContractsComponent {
 
   checkIn(contractId: number): void {
   // First, get the contract details to check status
-    this.dataFetchService.getContractById(contractId).subscribe({
+    this.dataFetchService.getContractResponseById(contractId).subscribe({
       next: (contract: any) => {
-         console.log('Fetched contract:', contract);
+          console.log('Fetched contract for return :', contract);
         // Check if contract is overdue (status == '2')
 
-        const today = new Date();
-        const checkInDate = new Date(contract.checkIn);
-        const daysOverdue = Math.max(0, Math.ceil((today.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)));
-        const extraAmount = daysOverdue * contract.price
-
-
         if (contract.status == '2') {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Set to midnight
+          
+          const checkInDate = new Date(contract.checkIn);
+          checkInDate.setHours(0, 0, 0, 0); // Set to midnight
+          
+          const diffTime = today.getTime() - checkInDate.getTime();
+          const daysOverdue = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+          const extraAmount = daysOverdue * contract.price;
+          // console.log('CheckIn:',checkInDate);
+          // console.log('today: ',today)
+          // console.log(`Contract is overdue by ${daysOverdue} days. Extra amount: ${extraAmount}`);
           // Open finance dialog for overdue contract
           const financeDialogRef = this.dialog.open(TransactionFormComponent, {
             width: '500px',
             data: { 
+              preFilled: true,
               contractId: contract.id,  
-              type: 'Income',
-              category: 'Rental Extension',
-              description: 'Income for Car Rental Extension',
+              type: TransactionType.Income,
+              category: TransactionCategory.LateFee,
+              description: `Income for ${contract.carPlate} for rental extension of ${daysOverdue} days by ${contract.customerName}`,
               carId: contract.carId,
               amount: extraAmount
             }
@@ -112,6 +122,7 @@ export class ContractsComponent {
 
           financeDialogRef.afterClosed().subscribe(financeResult => {
             if (financeResult) {
+              console.log('finance result in creating from return : ',financeResult)
               // Process the finance entry first
               this.dataSendService.createTransaction(financeResult).subscribe({
                 next: () => {
@@ -163,7 +174,7 @@ export class ContractsComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.dataSendService.returnContract(contractId, result).subscribe({
+        this.dataSendService.returnContract(contractId, result.CheckInDate).subscribe({
           next: () => {
             this.snackBar.open("Contract returned successfully", "Close", {
               duration: 2000,
@@ -194,7 +205,8 @@ export class ContractsComponent {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.dataSendService.extendContract(contractId, result).subscribe({
+        // console.log('New check-in date for extension:', result);
+        this.dataSendService.extendContract(contractId, result.CheckInDate).subscribe({
           next: () => {
             this.snackBar.open("Contract extended successfully", "Close", {
               duration: 2000,

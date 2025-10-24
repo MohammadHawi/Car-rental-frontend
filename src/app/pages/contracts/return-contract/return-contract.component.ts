@@ -9,7 +9,7 @@ import { FormControl, Validators } from '@angular/forms';
   styleUrl: './return-contract.component.scss'
 })
 export class ReturnContractComponent {
-  checkInDate = new FormControl(new Date(), Validators.required);
+  CheckInDate = new FormControl(new Date(), Validators.required);
 
   constructor(
     public dialogRef: MatDialogRef<ReturnContractComponent>,
@@ -17,7 +17,18 @@ export class ReturnContractComponent {
   ) {}
 
   submit(): void {
-    this.dialogRef.close(this.checkInDate.value);
+    const selectedDate: Date | null = this.CheckInDate.value;
+    if (selectedDate) {
+      // Normalize to midnight UTC to avoid time component issues
+      const normalized = new Date(Date.UTC(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      ));
+      const formatted = normalized.toISOString();
+      this.dialogRef.close({ CheckInDate: formatted });
+    }
   }
+
 }
 

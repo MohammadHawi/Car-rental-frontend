@@ -5,10 +5,16 @@
       <p>Manage your active tasks</p>
     </div>
     
-    <button mat-raised-button color="primary" (click)="openTaskForm()">
-      <mat-icon>add</mat-icon>
-      New Task
-    </button>
+    <div>
+      <button mat-stroked-button color="warn" (click)="deleteAll()" [disabled]="tasks.length === 0 || isLoading" style="margin-right:8px">
+        <mat-icon>delete_forever</mat-icon>
+        Delete All
+      </button>
+      <button mat-raised-button color="primary" (click)="openTaskForm()">
+        <mat-icon>add</mat-icon>
+        New Task
+      </button>
+    </div>
   </div>
   
   <div class="task-filters">

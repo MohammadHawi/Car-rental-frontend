@@ -1,1 +1,171 @@
-<p>statistics works!</p>
+<div class="statistics-dashboard">
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading statistics...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading" class="dashboard-content">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="header-left">
+        <div>
+          <h1 class="dashboard-title">Business Statistics</h1>
+          <p class="dashboard-subtitle">
+            <mat-icon class="subtitle-icon">insights</mat-icon>
+            Comprehensive analytics for {{ selectedYear }}
+          </p>
+        </div>
+      </div>
+      <div class="header-right">
+        <mat-form-field appearance="outline" class="year-selector">
+          <mat-label>Year</mat-label>
+          <mat-select [(ngModel)]="selectedYear" (selectionChange)="onYearChange()">
+            <mat-option *ngFor="let year of availableYears" [value]="year">
+              {{ year }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="refreshData()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <mat-card class="kpi-card total-revenue">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">attach_money</mat-icon>
+          <mat-card-title>Total Revenue</mat-card-title>
+          <mat-card-subtitle>Year {{ selectedYear }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="kpi-amount">{{ businessStats?.currentYearRevenue | currency }}</p>
+          <p class="kpi-subtext">Current Month: {{ businessStats?.currentMonthRevenue | currency }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card fleet-utilization">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">local_car_wash</mat-icon>
+          <mat-card-title>Fleet Utilization</mat-card-title>
+          <mat-card-subtitle>Average across fleet</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="kpi-amount">{{ businessStats?.fleetUtilizationRate }}%</p>
+          <p class="kpi-subtext">{{ businessStats?.totalCars }} Total Cars</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card active-contracts">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">description</mat-icon>
+          <mat-card-title>Active Contracts</mat-card-title>
+          <mat-card-subtitle>Currently rented</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="kpi-amount">{{ businessStats?.activeContracts }}</p>
+          <p class="kpi-subtext warning" *ngIf="(businessStats?.overdueContracts ?? 0) > 0">
+            {{ businessStats?.overdueContracts }} Overdue
+          </p>
+          <p class="kpi-subtext success" *ngIf="(businessStats?.overdueContracts ?? 0) === 0">
+            No Overdue Contracts
+          </p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card total-customers">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">people</mat-icon>
+          <mat-card-title>Total Customers</mat-card-title>
+          <mat-card-subtitle>Registered customers</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="kpi-amount">{{ businessStats?.totalCustomers }}</p>
+          <p class="kpi-subtext">View VIP List</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Quick Links Section -->
+    <div class="quick-links">
+      <h2><mat-icon>dashboard</mat-icon> Quick Access</h2>
+      <div class="quick-links-grid">
+        <mat-card class="quick-link-card" (click)="navigateToCarStats()">
+          <mat-icon color="primary">directions_car</mat-icon>
+          <h3>Car Performance</h3>
+          <p>View individual car statistics and rental history</p>
+        </mat-card>
+
+        <mat-card class="quick-link-card" (click)="navigateToCustomerStats()">
+          <mat-icon color="accent">people</mat-icon>
+          <h3>Customer Analytics</h3>
+          <p>VIP customers and rental patterns</p>
+        </mat-card>
+
+        <mat-card class="quick-link-card" (click)="navigateToBestCars()">
+          <mat-icon color="warn">star</mat-icon>
+          <h3>Best Performers</h3>
+          <p>Top performing cars by utilization</p>
+        </mat-card>
+
+        <mat-card class="quick-link-card" (click)="navigateToBrandAnalysis()">
+          <mat-icon style="color: #10b981;">analytics</mat-icon>
+          <h3>Brand Analysis</h3>
+          <p>Performance breakdown by brand</p>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Monthly Revenue Trend -->
+    <div class="chart-section">
+      <h2><mat-icon>show_chart</mat-icon> Monthly Revenue Trend</h2>
+      <mat-card class="chart-card">
+        <div class="chart-container">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Top Brands -->
+    <div class="table-section">
+      <h2><mat-icon>emoji_events</mat-icon> Top Brands Performance</h2>
+      <table mat-table [dataSource]="brandDataSource" class="mat-elevation-z2 custom-table">
+        <ng-container matColumnDef="brand">
+          <th mat-header-cell *matHeaderCellDef>Brand</th>
+          <td mat-cell *matCellDef="let brand">
+            <strong>{{ brand.brand }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="carsCount">
+          <th mat-header-cell *matHeaderCellDef>Cars</th>
+          <td mat-cell *matCellDef="let brand">{{ brand.carsCount }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalRentals">
+          <th mat-header-cell *matHeaderCellDef>Total Rentals</th>
+          <td mat-cell *matCellDef="let brand">{{ brand.totalRentals }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalRentalDays">
+          <th mat-header-cell *matHeaderCellDef>Total Days</th>
+          <td mat-cell *matCellDef="let brand">{{ brand.totalRentalDays }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalRevenue">
+          <th mat-header-cell *matHeaderCellDef>Revenue</th>
+          <td mat-cell *matCellDef="let brand">
+            <span class="revenue-amount">{{ brand.totalRevenue | currency }}</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['brand','carsCount','totalRentals','totalRentalDays','totalRevenue']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['brand','carsCount','totalRentals','totalRentalDays','totalRevenue'];"></tr>
+      </table>
+    </div>
+  </div>
+</div>

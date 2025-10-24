@@ -16,6 +16,8 @@ export class FinanceDashboardComponent implements OnInit {
   dateRangeForm!: FormGroup;
   loading = true;
   error = false;
+  today = new Date();
+  thirtyDaysAgo = new Date();
 
   constructor(
     private transactionFetschService: DataFetchService,
@@ -23,13 +25,12 @@ export class FinanceDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const today = new Date();
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    this.thirtyDaysAgo.setDate(this.today.getDate() - 1);
     
     this.dateRangeForm = this.fb.group({
-      startDate: [thirtyDaysAgo],
-      endDate: [today]
+      startDate: [this.thirtyDaysAgo],
+      endDate: [this.today]
     });
     
     this.loadFinancialData();
@@ -38,8 +39,7 @@ export class FinanceDashboardComponent implements OnInit {
   loadFinancialData(): void {
     this.loading = true;
     this.error = false;
-    
-    const { startDate, endDate } = this.dateRangeForm.value;
+    let { startDate, endDate } = this.dateRangeForm.value;
     
     this.transactionFetschService.getFinancialSummary(startDate, endDate)
       .subscribe(
@@ -54,15 +54,26 @@ export class FinanceDashboardComponent implements OnInit {
         }
       );
       
-    this.transactionFetschService.getAllTransactions()
-      .subscribe(
-        transactions => {
-          this.recentTransactions = transactions.slice(0, 5);
-        },
-        error => {
-          console.error('Error loading recent transactions', error);
-        }
-      );
+
+    if (startDate instanceof Date) {
+    startDate = startDate.toISOString();
+    }
+    if (endDate instanceof Date) {
+      endDate = endDate.toISOString();
+    }
+
+    this.transactionFetschService.getAllTransactions({
+      startDate: startDate,
+      endDate: endDate
+    }).subscribe(
+      data => {
+        this.recentTransactions = data.transactions;
+      },
+      error => {
+        console.error('Error loading daily transactions', error);
+      }
+    );
+
   }
 
   onDateRangeChange(): void {

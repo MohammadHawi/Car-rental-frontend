@@ -1,0 +1,234 @@
+<div class="view-contract-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading contract details...</p>
+  </div>
+
+  <!-- Contract Details -->
+  <div *ngIf="!isLoading && contract" class="contract-content">
+    <!-- Header -->
+    <div class="contract-header">
+      <div class="header-left">
+        <button mat-icon-button (click)="goBack()" matTooltip="Go Back">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1 class="contract-title">Contract #{{contract.id}}</h1>
+          <p class="contract-subtitle">
+            <mat-icon class="subtitle-icon">event</mat-icon>
+            Created: {{contract.checkOut | date:'MMM d, y'}}
+          </p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="editContract()">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        
+        <button mat-raised-button (click)="printContract()">
+          <mat-icon>print</mat-icon>
+          Print
+        </button>
+        
+        <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More Actions">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="returnContract()">
+            <mat-icon>done</mat-icon>
+            <span>Return Contract</span>
+          </button>
+          
+          <button mat-menu-item (click)="extendContract()">
+            <mat-icon>add_circle_outline</mat-icon>
+            <span>Extend Contract</span>
+          </button>
+          
+          <button mat-menu-item (click)="openWhatsApp()">
+            <mat-icon>chat</mat-icon>
+            <span>WhatsApp Customer</span>
+          </button>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item (click)="deleteContract()" class="delete-action">
+            <mat-icon>delete</mat-icon>
+            <span>Delete Contract</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div class="status-banner" [ngClass]="getStatusClass(contract.status)">
+      <div class="status-info">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>Status: {{getStatusText(contract.status)}}</strong>
+          <span *ngIf="contract.status === '1' && getDaysRemaining() >= 0">
+            - {{getDaysRemaining()}} days remaining
+          </span>
+          <span *ngIf="isOverdue()">
+            - Overdue by {{Math.abs(getDaysRemaining())}} days
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Vehicle Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">directions_car</mat-icon>
+          <mat-card-title>Vehicle Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <span class="label">Plate Number:</span>
+            <span class="value highlight">{{contract.carPlate}}</span>
+          </div>
+          <div class="info-row" *ngIf="contract.carModel">
+            <span class="label">Model:</span>
+            <span class="value">{{contract.carModel}}</span>
+          </div>
+          <div class="info-row" *ngIf="contract.carYear">
+            <span class="label">Year:</span>
+            <span class="value">{{contract.carYear}}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Customer Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">person</mat-icon>
+          <mat-card-title>Customer Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <span class="label">Name:</span>
+            <span class="value highlight">{{contract.customerName}}</span>
+          </div>
+          <div class="info-row" *ngIf="contract.phoneNumber">
+            <span class="label">Phone:</span>
+            <span class="value">{{contract.phoneNumber}}</span>
+          </div>
+          <div class="info-row" *ngIf="contract.email">
+            <span class="label">Email:</span>
+            <span class="value">{{contract.email}}</span>
+          </div>
+          <div class="info-row" *ngIf="contract.nationality">
+            <span class="label">Nationality:</span>
+            <span class="value">{{contract.nationality}}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Rental Period -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">date_range</mat-icon>
+          <mat-card-title>Rental Period</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <span class="label">Pick Out Date:</span>
+            <span class="value">{{contract.checkOut | date:'MMM d, y, h:mm a'}}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Drop In Date:</span>
+            <span class="value">{{contract.checkIn | date:'MMM d, y, h:mm a'}}</span>
+          </div>
+          <div class="info-row" *ngIf="contract.duration">
+            <span class="label">Duration:</span>
+            <span class="value">{{contract.duration}} days</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Financial Summary -->
+      <mat-card class="info-card financial-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">payments</mat-icon>
+          <mat-card-title>Financial Summary</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <span class="label">Daily Price:</span>
+            <span class="value">${{contract.price | number:'1.2-2'}}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Total Amount:</span>
+            <span class="value total-amount">${{contract.total | number:'1.2-2'}}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Paid Amount:</span>
+            <span class="value paid-amount">${{contract.paid | number:'1.2-2'}}</span>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row balance-row">
+            <span class="label">Balance Due:</span>
+            <span class="value balance-amount" 
+                  [class.overdue]="contract.balance > 0">
+              ${{contract.balance | number:'1.2-2'}}
+            </span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Additional Details -->
+      <mat-card class="info-card full-width" *ngIf="contract.notes || contract.additionalInfo">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">notes</mat-icon>
+          <mat-card-title>Additional Details</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row" *ngIf="contract.notes">
+            <span class="label">Notes:</span>
+            <span class="value">{{contract.notes}}</span>
+          </div>
+          <div class="info-row" *ngIf="contract.additionalInfo">
+            <span class="label">Additional Info:</span>
+            <span class="value">{{contract.additionalInfo}}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Action Buttons Footer -->
+    <div class="action-footer">
+      <button mat-raised-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Contracts
+      </button>
+      
+      <div class="footer-right">
+        <button mat-raised-button color="accent" (click)="returnContract()">
+          <mat-icon>done</mat-icon>
+          Return Contract
+        </button>
+        
+        <button mat-raised-button color="primary" (click)="editContract()">
+          <mat-icon>edit</mat-icon>
+          Edit Contract
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !contract" class="error-state">
+    <mat-icon>error_outline</mat-icon>
+    <h2>Contract Not Found</h2>
+    <p>The contract you're looking for doesn't exist or has been removed.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Go Back
+    </button>
+  </div>
+</div>

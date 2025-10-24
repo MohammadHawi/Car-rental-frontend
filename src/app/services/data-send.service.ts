@@ -56,16 +56,16 @@ export class DataSendService {
     });
   }
 
-  returnContract(contractId: number, checkInDate: Date): Observable<any> {
+  returnContract(contractId: number, CheckInDate: string): Observable<any> {
     let url: string = `${this.appconf.apiBaseUrl}/contracts/return/${contractId}`;
-    return this.http.post<any>(url, {checkInDate: new Date}, {
+    return this.http.post<any>(url, {CheckInDate}, {
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  extendContract(contractId: number, checkInDate: Date): Observable<any> {
+  extendContract(contractId: number, CheckInDate: string): Observable<any> {
     let url: string = `${this.appconf.apiBaseUrl}/contracts/extend/${contractId}`;
-    return this.http.post<any>(url, {checkInDate: new Date}, {
+    return this.http.post<any>(url, {CheckInDate}, {
       headers: { 'Content-Type': 'application/json' },
     });
   }

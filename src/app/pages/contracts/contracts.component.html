@@ -56,6 +56,7 @@
   <div class="table-wrapper" *ngIf="!isLoading">
     <table mat-table [dataSource]="dataSource" class="app-table wide-table">
       
+      
       <!-- ID Column -->
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>
@@ -217,6 +218,7 @@
                 <mat-icon>delete</mat-icon>
                 <span>Delete Contract</span>
               </button>
+              
             </mat-menu>
           </div>
         </td>
@@ -225,6 +227,7 @@
       <!-- Table Rows -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+       <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row clickable-row" [routerLink]="['/contracts', row.id]"></tr> -->
     </table>
 
     <!-- No Data Message -->

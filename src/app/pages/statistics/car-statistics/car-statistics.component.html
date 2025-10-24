@@ -1,0 +1,143 @@
+<div class="car-statistics">
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading car statistics...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="statistics-content">
+    <!-- Header -->
+    <div class="statistics-header">
+      <div class="header-left">
+        <button mat-icon-button (click)="goBack()" matTooltip="Go Back">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1 class="statistics-title">Car Performance Statistics</h1>
+          <p class="statistics-subtitle">
+            <mat-icon class="subtitle-icon">directions_car</mat-icon>
+            Detailed analytics for {{ selectedYear }}
+          </p>
+        </div>
+      </div>
+      <div class="header-right">
+        <mat-form-field appearance="outline" class="year-selector">
+          <mat-label>Year</mat-label>
+          <mat-select [(ngModel)]="selectedYear" (selectionChange)="onYearChange()">
+            <mat-option *ngFor="let year of availableYears" [value]="year">
+              {{ year }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Best Performers Section -->
+    <div class="best-performers-section">
+      <h2><mat-icon>emoji_events</mat-icon> Top 10 Best Performing Cars</h2>
+      <div class="performers-grid">
+        <mat-card *ngFor="let car of bestCars; let i = index" 
+                  class="performer-card" 
+                  [class.gold]="i === 0"
+                  [class.silver]="i === 1"
+                  [class.bronze]="i === 2">
+          <div class="rank-badge">
+            <mat-icon *ngIf="i === 0">emoji_events</mat-icon>
+            <span>{{ i + 1 }}</span>
+          </div>
+          <h3>{{ car.carDetails }}</h3>
+          <div class="stats-row">
+            <div class="stat">
+              <mat-icon>calendar_today</mat-icon>
+              <span>{{ car.totalRentalDays }} days</span>
+            </div>
+            <div class="stat">
+              <mat-icon>description</mat-icon>
+              <span>{{ car.totalContracts }} rentals</span>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat">
+              <mat-icon>attach_money</mat-icon>
+              <span>{{ car.totalRevenue | currency }}</span>
+            </div>
+            <div class="stat utilization">
+              <mat-icon>show_chart</mat-icon>
+              <span>{{ car.utilizationRate }}% utilized</span>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Monthly Averages Chart -->
+    <div class="chart-section">
+      <h2><mat-icon>show_chart</mat-icon> Monthly Rental Averages</h2>
+      <mat-card class="chart-card">
+        <div class="chart-container">
+          <canvas id="monthlyAveragesChart"></canvas>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- All Cars Statistics Table -->
+    <div class="table-section">
+      <h2><mat-icon>list</mat-icon> All Cars Statistics</h2>
+      
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Cars</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search by plate, brand...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <table mat-table [dataSource]="carsDataSource" matSort class="mat-elevation-z2 custom-table">
+        <ng-container matColumnDef="carDetails">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Car</th>
+          <td mat-cell *matCellDef="let car">
+            <strong>{{ car.carDetails }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalRentalDays">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rental Days</th>
+          <td mat-cell *matCellDef="let car">{{ car.totalRentalDays }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalContracts">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Contracts</th>
+          <td mat-cell *matCellDef="let car">{{ car.totalContracts }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalRevenue">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Revenue</th>
+          <td mat-cell *matCellDef="let car">
+            <span class="revenue-amount">{{ car.totalRevenue | currency }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="utilizationRate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Utilization</th>
+          <td mat-cell *matCellDef="let car">
+            <div class="utilization-bar">
+              <div class="bar-fill" [style.width.%]="car.utilizationRate"></div>
+              <span class="bar-text">{{ car.utilizationRate }}%</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let car">
+            <button mat-icon-button [routerLink]="['/cars', car.carId, 'history']" matTooltip="View History">
+              <mat-icon>history</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['carDetails','totalRentalDays','totalContracts','totalRevenue','utilizationRate','actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['carDetails','totalRentalDays','totalContracts','totalRevenue','utilizationRate','actions'];"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>

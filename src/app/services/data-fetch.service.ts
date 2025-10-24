@@ -78,8 +78,27 @@ export class DataFetchService {
     return this.http.get<any>(url);
   }
 
+  getAllTransactions(filter?:any): Observable<any> {
+    let params = new HttpParams();
+
+    if (filter) {
+      if (filter.pageNumber !== undefined) params = params.set('pageNumber', filter.pageNumber);
+      if (filter.pageSize !== undefined) params = params.set('pageSize', filter.pageSize);
+      if (filter.type !== undefined) params = params.set('type', filter.type);
+      if (filter.category !== undefined) params = params.set('category', filter.category);
+      if (filter.searchQuery) params = params.set('searchQuery', filter.searchQuery);
+      if (filter.startDate) params = params.set('startDate', filter.startDate);
+      if (filter.endDate) params = params.set('endDate', filter.endDate);
+    }
+    return this.http.get<any>(`${this.apiUrl}/transaction`, { params });
+  }
+
   getNationalities(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/Nationality`);
+    return this.http.get(`${this.apiUrl}/Routes/fetch/nationalities`);
+  }
+
+  getCategories(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Routes/fetch/categories`);
   }
 
   searchCustomersByName(name: string) {
@@ -90,6 +109,10 @@ export class DataFetchService {
     return this.http.get(`${this.apiUrl}/contracts/${contractId}`);
   }
 
+  getContractResponseById(contractId: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/contracts/getResponse/${contractId}`);
+  }
+
   getCarById(carId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/cars/${carId}`);
   }
@@ -98,9 +121,7 @@ export class DataFetchService {
     return this.http.get(`${this.apiUrl}/reservations`);
   }
 
-  getAllTransactions(): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.apiUrl}/transaction`);
-  }
+  
 
   getIncomeTransactions(): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.apiUrl}/income`);
@@ -157,6 +178,103 @@ export class DataFetchService {
     return TransactionType[type];
   }
 
-  
+  // ==================== CAR STATISTICS ====================
+
+  /**
+   * Get yearly report for a specific car
+   */
+  getCarYearlyReport(carId: number, year: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/statistics/cars/${carId}/yearly/${year}`);
+  }
+
+  /**
+   * Get yearly reports for all cars
+   */
+  getAllCarsYearlyReport(year: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/statistics/cars/yearly/${year}`);
+  }
+
+  /**
+   * Get monthly averages for rental days across all cars
+   */
+  getMonthlyAverages(year: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/statistics/cars/monthly-averages/${year}`);
+  }
+
+  /**
+   * Get best performing cars by rental days
+   */
+  getBestPerformingCars(year: number, topCount: number = 10): Observable<any> {
+    const params = new HttpParams().set('topCount', topCount.toString());
+    return this.http.get(`${this.apiUrl}/statistics/cars/best-performing/${year}`, { params });
+  }
+
+  /**
+   * Get car statistics with optional date range filter
+   */
+  getCarStatistics(startDate?: Date, endDate?: Date): Observable<any> {
+    let params = new HttpParams();
+    
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+
+    return this.http.get(`${this.apiUrl}/statistics/cars`, { params });
+  }
+
+  // ==================== CUSTOMER STATISTICS ====================
+
+  /**
+   * Get statistics for a specific customer (for customer profile)
+   */
+  getCustomerStatistics(customerId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/statistics/customers/${customerId}`);
+  }
+
+  /**
+   * Get VIP customers ranked by profit
+   */
+  getVIPCustomers(topCount: number = 20): Observable<any> {
+    const params = new HttpParams().set('topCount', topCount.toString());
+    return this.http.get(`${this.apiUrl}/statistics/customers/vip`, { params });
+  }
+
+  /**
+   * Get statistics for all customers
+   */
+  getAllCustomerStatistics(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/statistics/customers`);
+  }
+
+  // ==================== BUSINESS STATISTICS ====================
+
+  /**
+   * Get overall business statistics and dashboard data
+   */
+  getBusinessStatistics(year?: number): Observable<any> {
+    let params = new HttpParams();
+    
+    if (year) {
+      params = params.set('year', year.toString());
+    }
+
+    return this.http.get(`${this.apiUrl}/statistics/business`, { params });
+  }
+
+  /**
+   * Get brand performance statistics
+   */
+  getBrandPerformance(year?: number): Observable<any> {
+    let params = new HttpParams();
+    
+    if (year) {
+      params = params.set('year', year.toString());
+    }
+
+    return this.http.get(`${this.apiUrl}/statistics/brands`, { params });
+  }
 
 }

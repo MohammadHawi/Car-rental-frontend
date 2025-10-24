@@ -12,6 +12,9 @@ import { BookingCalendarComponent } from './pages/booking-calendar/booking-calen
 import { TaskListComponent } from './pages/tasks/task-list/task-list.component';
 import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed-tasks.component';
 import { CarHistoryComponent } from './pages/vehicles/car-history/car-history.component';
+import { ViewContractComponent } from './pages/contracts/view-contract/view-contract.component';
+import { StatisticsComponent } from './pages/statistics/statistics.component';
+import { CarStatisticsComponent } from './pages/statistics/car-statistics/car-statistics.component';
 // import { ContractsComponent } from './pages/contracts/contracts.component';
 
 const routes: Routes = [
@@ -28,6 +31,9 @@ const routes: Routes = [
   { path: 'booking-calendar', component: BookingCalendarComponent },
   { path: 'tasks/active', component: TaskListComponent },
   { path: 'tasks/completed', component: CompletedTasksComponent },
+  { path: 'contracts/:id',component: ViewContractComponent },
+  { path: 'statistics', component: StatisticsComponent },
+  { path: 'statistics/cars', component: CarStatisticsComponent },
   { path: '**', redirectTo: '/dashboard' },
 ];
 

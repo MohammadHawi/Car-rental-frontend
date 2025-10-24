@@ -1,5 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+
+
+
+/* Force all Material and app text to use Manrope */
+html, body, .mat-typography, .mat-body, .mat-table, .mat-button, .mat-form-field, 
+.mat-menu-item, .mat-tooltip, .mat-option, .mat-select-value, .mat-dialog-container {
+  font-family: 'Manrope', "Helvetica Neue", sans-serif !important;
+}
+
+// @font-face {
+//   font-family: 'Amiri';
+//   src: url('/assets/fonts/Amiri-Regular.woff2') format('woff2'),
+//        url('./assets/Fonts/Amiri-Regular.ttf') format('truetype');
+//   font-weight: 400;
+//   font-style: normal;
+// }
+
+
 
 * {
   box-sizing: border-box;
@@ -9,7 +28,7 @@
 
 html, body {
   height: 100%;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Manrope', "Helvetica Neue", sans-serif !important;
   background-color: #f9fbfd;
 }
 

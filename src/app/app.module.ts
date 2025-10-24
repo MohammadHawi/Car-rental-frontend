@@ -56,6 +56,10 @@ import { TaskFormComponent } from './pages/tasks/task-form/task-form.component';
 import { TaskListComponent } from './pages/tasks/task-list/task-list.component';
 import { CompletedTasksComponent } from './pages/tasks/completed-tasks/completed-tasks.component';
 import { CarHistoryComponent } from './pages/vehicles/car-history/car-history.component';
+import { ViewContractComponent } from './pages/contracts/view-contract/view-contract.component';
+import { StatisticsComponent } from './pages/statistics/statistics.component';
+import { CarStatisticsComponent } from './pages/statistics/car-statistics/car-statistics.component';
+import { CustomerStatisticsComponent } from './pages/statistics/customer-statistics/customer-statistics.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +85,10 @@ import { CarHistoryComponent } from './pages/vehicles/car-history/car-history.co
     TaskListComponent,
     CompletedTasksComponent,
     CarHistoryComponent,
+    ViewContractComponent,
+    StatisticsComponent,
+    CarStatisticsComponent,
+    CustomerStatisticsComponent
     ],
   imports: [
     BrowserModule,

@@ -6,6 +6,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Data } from '@angular/router';
 import { DataFetchService } from '../../../services/data-fetch.service';
 import { DataSendService } from '../../../services/data-send.service';
+import { PageEvent } from '@angular/material/paginator';
+
+interface Category {
+  id: number;
+  name: string;
+  type: string;
+}
 
 @Component({
   selector: 'app-transactions-list',
@@ -16,9 +23,15 @@ import { DataSendService } from '../../../services/data-send.service';
 export class TransactionsListComponent implements OnInit {
   transactions: Transaction[] = [];
   filteredTransactions: Transaction[] = [];
+  categories: Category[] = [];
   loading = true;
   searchTerm = '';
+  pageSize: number = 50;
+  currentPage: number = 0;
+  filter: any = {};
+  totalCount: number = 0;
   selectedType: string = 'all';
+  selectedCategory: string = 'all';
   
   displayedColumns: string[] = ['date', 'type', 'category', 'description', 'amount', 'actions'];
 
@@ -30,15 +43,30 @@ export class TransactionsListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loadCategories();
     this.loadTransactions();
+  }
+
+  loadCategories(): void {
+    this.transactionFetchService.getCategories().subscribe(
+      data => {
+        this.categories = data;
+      },
+      error => {
+        console.error('Error loading categories', error);
+        this.snackBar.open('Error loading categories', 'Close', { duration: 3000 });
+      }
+    );
   }
 
   loadTransactions(): void {
     this.loading = true;
-    this.transactionFetchService.getAllTransactions().subscribe(
+    this.filter.pageNumber = this.currentPage + 1;
+    this.filter.pageSize = this.pageSize;
+    this.transactionFetchService.getAllTransactions(this.filter).subscribe(
       data => {
-        this.transactions = data;
-        this.applyFilters();
+        this.transactions = data.transactions;
+        this.totalCount = data.totalCount;
         this.loading = false;
       },
       error => {
@@ -49,35 +77,48 @@ export class TransactionsListComponent implements OnInit {
     );
   }
 
-  applyFilters(): void {
-    let filtered = [...this.transactions];
-    
-    // Apply type filter
-    if (this.selectedType !== 'all') {
-      const typeValue = this.selectedType === 'income' ? TransactionType.Income : TransactionType.Expense;
-      filtered = filtered.filter(t => t.type === typeValue);
-    }
-    
-    // Apply search filter
-    if (this.searchTerm) {
-      const search = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(t => 
-        this.transactionFetchService.getCategoryName(t.category).toLowerCase().includes(search) ||
-        (t.description && t.description.toLowerCase().includes(search)) ||
-        (t.contractNumber && t.contractNumber.toLowerCase().includes(search)) ||
-        (t.carDetails && t.carDetails.toLowerCase().includes(search))
-      );
-    }
-    
-    this.filteredTransactions = filtered;
+  filterCallback(type: string | number, id: string) {
+    this.filter[type] = id;
+    this.applyFilters();
   }
 
-  onSearch(): void {
-    this.applyFilters();
+  applyFilters(): void {
+    this.loadTransactions();
+  }
+
+  onPageChange(event: PageEvent) {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadTransactions();
   }
 
   onTypeFilterChange(): void {
+    if (this.selectedType === 'all') {
+      delete this.filter['type'];
+    } else {
+      this.filter['type'] = this.selectedType;
+    }
+    this.currentPage = 0;
     this.applyFilters();
+  }
+
+  onCategoryFilterChange(): void {
+    if (this.selectedCategory === 'all') {
+      delete this.filter['category'];
+    } else {
+      this.filter['category'] = this.selectedCategory;
+    }
+    this.currentPage = 0;
+    this.applyFilters();
+  }
+
+  get filteredCategories(): Category[] {
+    if (this.selectedType === 'all') {
+      return this.categories;
+    }
+    return this.categories.filter(cat => 
+      cat.type.toLowerCase() === this.selectedType.toLowerCase()
+    );
   }
 
   openTransactionForm(transaction?: Transaction): void {

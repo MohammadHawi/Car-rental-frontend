@@ -1,75 +1,127 @@
-<div class="car-history" *ngIf="!isLoading; else loading">
-  <h1>Car History</h1>
-  <h3>{{ carDetails }}</h3>
-
-  <!-- Summary Section -->
-  <div class="summary-cards">
-    <mat-card class="income-card">
-      <h3>Total Income</h3>
-      <p>{{ summary?.totalIncome | currency }}</p>
-    </mat-card>
-    <mat-card class="expense-card">
-      <h3>Total Expenses</h3>
-      <p>{{ summary?.totalExpenses | currency }}</p>
-    </mat-card>
-    <mat-card class="net-card">
-      <h3>Net Profit</h3>
-      <p [ngClass]="{'positive': summary?.netIncome >= 0, 'negative': summary?.netIncome < 0}">
-        {{ summary?.netIncome | currency }}
-      </p>
-    </mat-card>
-  </div>
-
-  <!-- Contracts Table -->
-  <h2>Contracts</h2>
-  <table mat-table [dataSource]="contracts" class="mat-elevation-z2 full-width-table">
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>Contract #</th>
-      <td mat-cell *matCellDef="let c">{{ c.id }}</td>
-    </ng-container>
-    <ng-container matColumnDef="customerName">
-      <th mat-header-cell *matHeaderCellDef>Customer</th>
-      <td mat-cell *matCellDef="let c">{{ c.customerName }}</td>
-    </ng-container>
-    <ng-container matColumnDef="checkIn">
-      <th mat-header-cell *matHeaderCellDef>Check-In</th>
-      <td mat-cell *matCellDef="let c">{{ c.checkIn | date }}</td>
-    </ng-container>
-    <ng-container matColumnDef="checkOut">
-      <th mat-header-cell *matHeaderCellDef>Check-Out</th>
-      <td mat-cell *matCellDef="let c">{{ c.checkOut | date }}</td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="['id','customerName','checkIn','checkOut']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['id','customerName','checkIn','checkOut']"></tr>
-  </table>
-
-  <!-- Transactions Table -->
-  <h2>Transactions</h2>
-  <table mat-table [dataSource]="transactions" class="mat-elevation-z2 full-width-table">
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef>Date</th>
-      <td mat-cell *matCellDef="let t">{{ t.date | date }}</td>
-    </ng-container>
-    <ng-container matColumnDef="type">
-      <th mat-header-cell *matHeaderCellDef>Type</th>
-      <td mat-cell *matCellDef="let t">{{ t.type }}</td>
-    </ng-container>
-    <ng-container matColumnDef="amount">
-      <th mat-header-cell *matHeaderCellDef>Amount</th>
-      <td mat-cell *matCellDef="let t">{{ t.amount | currency }}</td>
-    </ng-container>
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef>Description</th>
-      <td mat-cell *matCellDef="let t">{{ t.description }}</td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="['date','type','amount','description']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['date','type','amount','description']"></tr>
-  </table>
-</div>
-
-<ng-template #loading>
-  <div class="loading-container">
+<div class="view-car-history">
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
     <mat-spinner diameter="50"></mat-spinner>
-    <p>Loading history...</p>
+    <p>Loading car history...</p>
   </div>
-</ng-template>
+
+  <!-- Car History Content -->
+  <div *ngIf="!isLoading" class="history-content">
+    <!-- Header -->
+    <div class="history-header">
+      <div class="header-left">
+        <button mat-icon-button (click)="goBack()" matTooltip="Go Back">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1 class="history-title">Car History</h1>
+          <p class="history-subtitle">
+            <mat-icon class="subtitle-icon">directions_car</mat-icon>
+            {{ carDetails }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <mat-card class="summary-card income">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">attach_money</mat-icon>
+          <mat-card-title>Total Income</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="amount">{{ summary?.totalIncome | currency }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card expense">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">money_off</mat-icon>
+          <mat-card-title>Total Expenses</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="amount">{{ summary?.totalExpenses | currency }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card net">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">account_balance_wallet</mat-icon>
+          <mat-card-title>Net Profit</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="amount" [ngClass]="{'positive': summary?.netIncome >= 0, 'negative': summary?.netIncome < 0}">
+            {{ summary?.netIncome | currency }}
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Contracts Table -->
+    <div class="table-section">
+      <h2><mat-icon>description</mat-icon> Contracts</h2>
+      <table mat-table [dataSource]="contracts" class="mat-elevation-z2 custom-table">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>Contract #</th>
+          <td mat-cell *matCellDef="let c">{{ c.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="customerName">
+          <th mat-header-cell *matHeaderCellDef>Customer</th>
+          <td mat-cell *matCellDef="let c">{{ c.customerName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="checkOut">
+          <th mat-header-cell *matHeaderCellDef>Pick Out</th>
+          <td mat-cell *matCellDef="let c">{{ c.checkOut | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="checkIn">
+          <th mat-header-cell *matHeaderCellDef>Drop In</th>
+          <td mat-cell *matCellDef="let c">{{ c.checkIn | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['id','customerName','checkOut','checkIn']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['id','customerName','checkOut','checkIn'];"></tr>
+      </table>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="table-section">
+      <h2><mat-icon>payments</mat-icon> Transactions</h2>
+      <table mat-table [dataSource]="transactions" class="mat-elevation-z2 custom-table">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let t">{{ t.date | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let t">{{ t.type }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let t">{{ t.amount | currency }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let t">{{ t.description }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['date','type','amount','description']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['date','type','amount','description'];"></tr>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="action-footer">
+      <button mat-raised-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+    </div>
+  </div>
+</div>

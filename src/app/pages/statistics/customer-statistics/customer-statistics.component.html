@@ -1,0 +1,149 @@
+<!-- <div class="customer-statistics">
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading customer statistics...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="statistics-content">
+    <div class="statistics-header">
+      <div class="header-left">
+        <button mat-icon-button (click)="goBack()" matTooltip="Go Back">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1 class="statistics-title">Customer Analytics</h1>
+          <p class="statistics-subtitle">
+            <mat-icon class="subtitle-icon">people</mat-icon>
+            VIP customers and rental insights
+          </p>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="refreshData()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+
+    <div class="vip-section">
+      <h2><mat-icon>workspace_premium</mat-icon> Top 20 VIP Customers</h2>
+      <div class="vip-grid">
+        <mat-card *ngFor="let customer of vipCustomers; let i = index" 
+                  class="vip-card"
+                  [class.vip]="customer.tier === 'VIP'"
+                  [class.gold]="customer.tier === 'Gold'"
+                  [class.silver]="customer.tier === 'Silver'"
+                  [routerLink]="['/customers', customer.customerId]">
+          <div class="rank-badge" [class.top3]="i < 3">
+            <mat-icon *ngIf="i === 0">emoji_events</mat-icon>
+            <mat-icon *ngIf="i === 1">military_tech</mat-icon>
+            <mat-icon *ngIf="i === 2">grade</mat-icon>
+            <span *ngIf="i >= 3">#{{ customer.rank }}</span>
+          </div>
+          
+          <div class="tier-badge" [class]="customer.tier.toLowerCase()">
+            {{ customer.tier }}
+          </div>
+
+          <h3>{{ customer.customerName }}</h3>
+          <p class="phone">
+            <mat-icon>phone</mat-icon>
+            {{ customer.phoneNumber }}
+          </p>
+
+          <div class="customer-stats">
+            <div class="stat">
+              <mat-icon>attach_money</mat-icon>
+              <div>
+                <span class="stat-label">Total Profit</span>
+                <span class="stat-value profit">{{ customer.totalProfit | currency }}</span>
+              </div>
+            </div>
+            <div class="stat">
+              <mat-icon>description</mat-icon>
+              <div>
+                <span class="stat-label">Total Rentals</span>
+                <span class="stat-value">{{ customer.totalRentals }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2><mat-icon>list</mat-icon> All Customers Statistics</h2>
+      
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Customers</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search by name, phone...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <table mat-table [dataSource]="customersDataSource" matSort class="mat-elevation-z2 custom-table">
+        <ng-container matColumnDef="customerName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
+          <td mat-cell *matCellDef="let customer">
+            <div class="customer-info">
+              <strong>{{ customer.customerName }}</strong>
+              <span class="phone-small">{{ customer.phoneNumber }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="customerTier">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tier</th>
+          <td mat-cell *matCellDef="let customer">
+            <span class="tier-badge-small" [class]="customer.customerTier.toLowerCase()">
+              {{ customer.customerTier }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalRentals">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rentals</th>
+          <td mat-cell *matCellDef="let customer">{{ customer.totalRentals }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalRentalDays">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Days</th>
+          <td mat-cell *matCellDef="let customer">{{ customer.totalRentalDays }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalSpent">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Spent</th>
+          <td mat-cell *matCellDef="let customer">
+            <span class="amount">{{ customer.totalSpent | currency }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="totalProfit">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Profit</th>
+          <td mat-cell *matCellDef="let customer">
+            <span class="profit-amount">{{ customer.totalProfit | currency }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="averageRentalDuration">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Avg Duration</th>
+          <td mat-cell *matCellDef="let customer">
+            {{ customer.averageRentalDuration }} days
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let customer">
+            <button mat-icon-button [routerLink]="['/customers', customer.customerId, 'profile']" matTooltip="View Profile">
+              <mat-icon>person</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['customerName','customerTier','totalRentals','totalRentalDays','totalSpent','totalProfit','averageRentalDuration','actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['customerName','customerTier','totalRentals','totalRentalDays','totalSpent','totalProfit','averageRentalDuration','actions'];"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div> -->

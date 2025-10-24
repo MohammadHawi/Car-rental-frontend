@@ -1,238 +1,289 @@
 <div class="transaction-form-container">
-    <h2 mat-dialog-title>
-      <mat-icon *ngIf="!isEditMode">add_circle</mat-icon>
-      <mat-icon *ngIf="isEditMode">edit</mat-icon>
-      {{ isEditMode ? 'Edit Transaction' : 'New Transaction' }}
-    </h2>
-  
-    <div *ngIf="loading" class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading data...</p>
-    </div>
-  
-    <form *ngIf="!loading" [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
-      <mat-dialog-content>
-        <!-- Transaction Type -->
+  <h2 mat-dialog-title>
+    <mat-icon *ngIf="!isEditMode">add_circle</mat-icon>
+    <mat-icon *ngIf="isEditMode">edit</mat-icon>
+    {{ isEditMode ? "Edit Transaction" : "New Transaction" }}
+  </h2>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading data...</p>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+      <!-- Transaction Type -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Transaction Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option [value]="TransactionType.Income">
+              <span class="type-option income">Income</span>
+            </mat-option>
+            <mat-option [value]="TransactionType.Expense">
+              <span class="type-option expense">Expense</span>
+            </mat-option>
+          </mat-select>
+          <mat-hint *ngIf="isEditMode">Transaction type cannot be changed after creation</mat-hint>
+          <mat-error *ngIf="transactionForm.get('type')?.hasError('required')">
+            Transaction type is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Category -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category</mat-label>
+          <mat-select formControlName="category">
+            <mat-select-trigger>
+              <mat-icon>{{
+                getCategoryIcon(transactionForm.get("category")?.value)
+                }}</mat-icon>
+              <span>{{
+                getCategoryName(transactionForm.get("category")?.value)
+                }}</span>
+            </mat-select-trigger>
+
+            <mat-option *ngFor="let category of categories" [value]="category.id">
+              <div class="category-option">
+                <mat-icon>{{ getCategoryIcon(category.id) }}</mat-icon>
+                <span>{{ category.name }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+
+          <mat-error *ngIf="transactionForm.get('category')?.hasError('required')">
+            Category is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Amount -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Amount</mat-label>
+          <input matInput type="number" formControlName="amount" min="0.01" step="0.01" />
+          <span matPrefix>$&nbsp;</span>
+          <mat-error *ngIf="transactionForm.get('amount')?.hasError('required')">
+            Amount is required
+          </mat-error>
+          <mat-error *ngIf="transactionForm.get('amount')?.hasError('min')">
+            Amount must be greater than 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Date with quick actions -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="date" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <button type="button" mat-icon-button matSuffix (click)="setToday()" title="Set to today">
+            <mat-icon>today</mat-icon>
+          </button>
+          <mat-error *ngIf="transactionForm.get('date')?.hasError('required')">
+            Date is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Description -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3"
+            placeholder="Enter transaction details..."></textarea>
+          <mat-hint align="end">{{
+            transactionForm.get("description")?.value?.length || 0
+            }}/500</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <!-- Related Entities Section -->
+      <div class="related-entities-section">
+        <div class="section-header">
+          <h3>Related Entities</h3>
+          <button type="button" mat-button color="warn" (click)="clearRelatedEntities()" *ngIf="
+              transactionForm.get('contractId')?.value ||
+              transactionForm.get('carId')?.value
+            ">
+            <mat-icon>clear_all</mat-icon>
+            Clear All
+          </button>
+        </div>
+
+        <!-- Related Contract -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Transaction Type</mat-label>
-            <mat-select formControlName="type">
-              <mat-option [value]="TransactionType.Income">
-                <span class="type-option income">Income</span>
-              </mat-option>
-              <mat-option [value]="TransactionType.Expense">
-                <span class="type-option expense">Expense</span>
+            <mat-label>Related Contract</mat-label>
+            <mat-select formControlName="contractId">
+              <mat-option [value]="null">None</mat-option>
+              <mat-option *ngFor="let contract of contracts" [value]="contract.id">
+                {{ getContractDisplayName(contract) }}
               </mat-option>
             </mat-select>
-            <mat-hint *ngIf="isEditMode">Transaction type cannot be changed after creation</mat-hint>
-            <mat-error *ngIf="transactionForm.get('type')?.hasError('required')">
-              Transaction type is required
-            </mat-error>
           </mat-form-field>
         </div>
-        
-        <!-- Category -->
-        <div class="form-row">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Category</mat-label>
-              <mat-select formControlName="category">
-                <mat-option *ngFor="let category of categories" [value]="category.value">
-                  <div class="category-option">
-                    <mat-icon>{{ getCategoryIcon(category.value) }}</mat-icon>
-                    <span>{{ category.name }}</span>
-                  </div>
-                </mat-option>
-              </mat-select>
-              <mat-error *ngIf="transactionForm.get('category')?.hasError('required')">
-                Category is required
-              </mat-error>
-            </mat-form-field>
-          </div>
-        
-        <!-- Amount -->
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Amount</mat-label>
-            <input matInput type="number" formControlName="amount" min="0.01" step="0.01">
-            <span matPrefix>$&nbsp;</span>
-            <mat-error *ngIf="transactionForm.get('amount')?.hasError('required')">
-              Amount is required
-            </mat-error>
-            <mat-error *ngIf="transactionForm.get('amount')?.hasError('min')">
-              Amount must be greater than 0
-            </mat-error>
-          </mat-form-field>
-        </div>
-        
-        <!-- Date with quick actions -->
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Date</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            <button type="button" mat-icon-button matSuffix (click)="setToday()" title="Set to today">
-              <mat-icon>today</mat-icon>
-            </button>
-            <mat-error *ngIf="transactionForm.get('date')?.hasError('required')">
-              Date is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-        
-        <!-- Description -->
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Description</mat-label>
-            <textarea matInput formControlName="description" rows="3" placeholder="Enter transaction details..."></textarea>
-            <mat-hint align="end">{{ transactionForm.get('description')?.value?.length || 0 }}/500</mat-hint>
-          </mat-form-field>
-        </div>
-        
-        <!-- Related Entities Section -->
-        <div class="related-entities-section">
-          <div class="section-header">
-            <h3>Related Entities</h3>
-            <button type="button" mat-button color="warn" (click)="clearRelatedEntities()" *ngIf="transactionForm.get('contractId')?.value || transactionForm.get('carId')?.value">
-              <mat-icon>clear_all</mat-icon>
-              Clear All
-            </button>
-          </div>
-          
-          <!-- Related Contract -->
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Related Contract</mat-label>
-              <mat-select formControlName="contractId">
-                <mat-option [value]="null">None</mat-option>
-                <mat-option *ngFor="let contract of contracts" [value]="contract.id">
-                  {{ getContractDisplayName(contract) }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          
-          <!-- Contract Details Card -->
-          <div *ngIf="selectedContract" class="related-entity-card">
-            <div class="card-header">
-              <mat-icon>description</mat-icon>
-              <h4>Contract Details</h4>
-            </div>
-            <div class="card-content">
-              <p><strong>Contract #:</strong> {{ selectedContract.id }}</p>
-              <p><strong>Customer:</strong> {{ selectedContract.customerName }}</p>
-              <p><strong>Start Date:</strong> {{ selectedContract.checkOut | date:'mediumDate' }}</p>
-              <p><strong>End Date:</strong> {{ selectedContract.checkIn | date:'mediumDate' }}</p>
-              <p><strong>Total Value:</strong> ${{ selectedContract.total | number:'1.2-2' }}</p>
-            </div>
-          </div>
-          
-          <!-- Related Car -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Related Car</mat-label>
-            <input
-              type="text"
-              matInput
-              [formControl]="carInputControl"
-              [matAutocomplete]="autoCar"
-              placeholder="Select a car"
-            />
-            <mat-autocomplete #autoCar="matAutocomplete" (optionSelected)="onCarSelected($event.option.value)">
-              <mat-option *ngFor="let car of filteredCars" [value]="getCarDisplayName(car)">
-                {{ getCarDisplayName(car) }}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-          
-          <!-- Car Details Card -->
-          <div *ngIf="selectedCar" class="related-entity-card">
-            <div class="card-header">
-              <mat-icon>directions_car</mat-icon>
-              <h4>Car Details</h4>
-            </div>
-            <div class="card-content">
-              <p><strong>Make & Model:</strong> {{ selectedCar.make }} {{ selectedCar.model }}</p>
-              <p><strong>Year:</strong> {{ selectedCar.year }}</p>
-              <p><strong>License Plate:</strong> {{ selectedCar.licensePlate }}</p>
-              <p><strong>Daily Rate:</strong> ${{ selectedCar.dailyRate | number:'1.2-2' }}</p>
-            </div>
-          </div>
-        </div>
-      </mat-dialog-content>
 
-      <!-- Add this before the mat-dialog-actions -->
-    <div *ngIf="transactionForm.invalid && (transactionForm.dirty || transactionForm.touched)" class="validation-summary">
-        <div class="validation-header">
+        <!-- Contract Details Card -->
+        <div *ngIf="selectedContract" class="related-entity-card">
+          <div class="card-header">
+            <mat-icon>description</mat-icon>
+            <h4>Contract Details</h4>
+          </div>
+          <div class="card-content">
+            <p><strong>Contract #:</strong> {{ selectedContract.id }}</p>
+            <p>
+              <strong>Customer:</strong> {{ selectedContract.customerName }}
+            </p>
+            <p>
+              <strong>Start Date:</strong>
+              {{ selectedContract.checkOut | date : "mediumDate" }}
+            </p>
+            <p>
+              <strong>End Date:</strong>
+              {{ selectedContract.checkIn | date : "mediumDate" }}
+            </p>
+            <p>
+              <strong>Total Value:</strong> ${{
+              selectedContract.total | number : "1.2-2"
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Related Car -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Related Car</mat-label>
+          <input type="text" matInput [formControl]="carInputControl" [matAutocomplete]="autoCar"
+            placeholder="Select a car" />
+          <mat-autocomplete #autoCar="matAutocomplete" (optionSelected)="onCarSelected($event.option.value)">
+            <mat-option *ngFor="let car of filteredCars" [value]="getCarDisplayName(car)">
+              {{ getCarDisplayName(car) }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <!-- Car Details Card -->
+        <div *ngIf="selectedCar" class="related-entity-card">
+          <div class="card-header">
+            <mat-icon>directions_car</mat-icon>
+            <h4>Car Details</h4>
+          </div>
+          <div class="card-content">
+            <p>
+              <strong>Make & Model:</strong> {{ selectedCar.make }}
+              {{ selectedCar.model }}
+            </p>
+            <p><strong>Year:</strong> {{ selectedCar.year }}</p>
+            <p>
+              <strong>License Plate:</strong> {{ selectedCar.licensePlate }}
+            </p>
+            <p>
+              <strong>Daily Rate:</strong> ${{
+              selectedCar.dailyRate | number : "1.2-2"
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+
+    <!-- Add this before the mat-dialog-actions -->
+    <div *ngIf="
+        transactionForm.invalid &&
+        (transactionForm.dirty || transactionForm.touched)
+      " class="validation-summary">
+      <div class="validation-header">
         <mat-icon>error_outline</mat-icon>
         <span>Please fix the following errors:</span>
-        </div>
-        <ul>
-        <li *ngIf="transactionForm.get('type')?.invalid">Transaction type is required</li>
-        <li *ngIf="transactionForm.get('category')?.invalid">Category is required</li>
+      </div>
+      <ul>
+        <li *ngIf="transactionForm.get('type')?.invalid">
+          Transaction type is required
+        </li>
+        <li *ngIf="transactionForm.get('category')?.invalid">
+          Category is required
+        </li>
         <li *ngIf="transactionForm.get('amount')?.invalid">
-            Amount {{ transactionForm.get('amount')?.hasError('required') ? 'is required' : 'must be greater than 0' }}
+          Amount
+          {{
+          transactionForm.get("amount")?.hasError("required")
+          ? "is required"
+          : "must be greater than 0"
+          }}
         </li>
         <li *ngIf="transactionForm.get('date')?.invalid">Date is required</li>
-        </ul>
+      </ul>
     </div>
 
     <!-- Add this before the mat-dialog-actions -->
     <div class="preview-section">
-        <button type="button" mat-stroked-button color="primary" (click)="togglePreview()">
-        <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
-        {{ showPreview ? 'Hide Preview' : 'Show Preview' }}
-        </button>
-        
-        <div *ngIf="showPreview" class="transaction-preview">
+      <button type="button" mat-stroked-button color="primary" (click)="togglePreview()">
+        <mat-icon>{{ showPreview ? "visibility_off" : "visibility" }}</mat-icon>
+        {{ showPreview ? "Hide Preview" : "Show Preview" }}
+      </button>
+
+      <div *ngIf="showPreview" class="transaction-preview">
         <h3>Transaction Preview</h3>
-        
+
         <div class="preview-card">
-            <div class="preview-header" [ngClass]="{'income': getPreviewData().type === TransactionType.Income, 'expense': getPreviewData().type === TransactionType.Expense}">
+          <div class="preview-header" [ngClass]="{
+              income: getPreviewData().type === TransactionType.Income,
+              expense: getPreviewData().type === TransactionType.Expense
+            }">
             <div class="preview-type">{{ getPreviewData().typeName }}</div>
-            <div class="preview-amount">${{ getPreviewData().amount | number:'1.2-2' }}</div>
+            <div class="preview-amount">
+              ${{ getPreviewData().amount | number : "1.2-2" }}
             </div>
-            
-            <div class="preview-body">
+          </div>
+
+          <div class="preview-body">
             <div class="preview-row">
-                <span class="label">Category:</span>
-                <span class="value">{{ getPreviewData().categoryName }}</span>
+              <span class="label">Category:</span>
+              <span class="value">{{ getPreviewData().categoryName }}</span>
             </div>
-            
+
             <div class="preview-row">
-                <span class="label">Date:</span>
-                <span class="value">{{ getPreviewData().date | date:'mediumDate' }}</span>
+              <span class="label">Date:</span>
+              <span class="value">{{
+                getPreviewData().date | date : "mediumDate"
+                }}</span>
             </div>
-            
+
             <div class="preview-row" *ngIf="getPreviewData().description">
-                <span class="label">Description:</span>
-                <span class="value">{{ getPreviewData().description }}</span>
+              <span class="label">Description:</span>
+              <span class="value">{{ getPreviewData().description }}</span>
             </div>
-            
+
             <div class="preview-row" *ngIf="getPreviewData().contractDetails">
-                <span class="label">Contract:</span>
-                <span class="value">{{ getPreviewData().contractDetails }}</span>
+              <span class="label">Contract:</span>
+              <span class="value">{{ getPreviewData().contractDetails }}</span>
             </div>
-            
+
             <div class="preview-row" *ngIf="getPreviewData().carDetails">
-                <span class="label">Car:</span>
-                <span class="value">{{ getPreviewData().carDetails }}</span>
+              <span class="label">Car:</span>
+              <span class="value">{{ getPreviewData().carDetails }}</span>
             </div>
-            </div>
+          </div>
         </div>
-        </div>
+      </div>
     </div>
-      
-      <mat-dialog-actions align="end">
-        <button mat-button type="button" [disabled]="submitting" (click)="onCancel()">
-          Cancel
-        </button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="transactionForm.invalid || submitting">
-          <mat-spinner diameter="20" *ngIf="submitting"></mat-spinner>
-          <span *ngIf="!submitting">
-            <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
-            {{ isEditMode ? 'Update' : 'Create' }}
-          </span>
-        </button>
-      </mat-dialog-actions>
-    </form>
-  </div>
+
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" [disabled]="submitting" (click)="onCancel()">
+        Cancel
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="transactionForm.invalid || submitting">
+        <mat-spinner diameter="20" *ngIf="submitting"></mat-spinner>
+        <span *ngIf="!submitting">
+          <mat-icon>{{ isEditMode ? "save" : "add" }}</mat-icon>
+          {{ isEditMode ? "Update" : "Create" }}
+        </span>
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

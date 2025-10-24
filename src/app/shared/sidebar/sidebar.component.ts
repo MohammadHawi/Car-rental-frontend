@@ -10,6 +10,8 @@ interface NavItem {
 
 interface NavSubItem {
   label: string;
+  icon?: string;
+  
   route: string;
 }
 
@@ -45,7 +47,29 @@ export class SidebarComponent {
         { label: 'Completed Tasks', route: '/tasks/completed' }
       ],
       expanded: false
+    },
+    {
+  label: 'Statistics',
+  icon: 'insights',
+  route: '/statistics',
+  children: [
+    {
+      label: 'Dashboard',
+      icon: 'dashboard',
+      route: '/statistics'
+    },
+    {
+      label: 'Car Performance',
+      icon: 'directions_car',
+      route: '/statistics/cars'
+    },
+    {
+      label: 'Customer Analytics',
+      icon: 'people',
+      route: '/statistics/customers'
     }
+  ]
+}
   ];
   
   isMobileMenuOpen = false;

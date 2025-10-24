@@ -7,13 +7,13 @@ import {
   TransactionType, 
   TransactionCategory, 
   CreateTransaction, 
-  UpdateTransaction 
+  UpdateTransaction,
+  
 } from '../../../models/transaction.model';
 
 import { Observable, forkJoin } from 'rxjs';
 import { DataFetchService } from '../../../services/data-fetch.service';
 import { DataSendService } from '../../../services/data-send.service';
-
 
 @Component({
   selector: 'app-transaction-form',
@@ -33,27 +33,14 @@ export class TransactionFormComponent implements OnInit {
   // Expose enum to template
   TransactionType = TransactionType;
   
-  incomeCategoriesEnum = [
-    TransactionCategory.RentalPayment,
-    TransactionCategory.Deposit,
-    TransactionCategory.LateFee,
-    TransactionCategory.DamageFee
-  ];
+  // Store all categories from API
+  allCategories: any[] = [];
+  incomeCategories: any[] = [];
+  expenseCategories: any[] = [];
   
-  expenseCategoriesEnum = [
-    TransactionCategory.Maintenance,
-    TransactionCategory.Insurance,
-    TransactionCategory.Fuel,
-    TransactionCategory.Taxes,
-    TransactionCategory.Salaries,
-    TransactionCategory.Utilities,
-    TransactionCategory.Marketing,
-    TransactionCategory.OfficeCosts,
-    TransactionCategory.VehiclePurchase,
-    TransactionCategory.Other
-  ];
+  // Currently displayed categories based on transaction type
+  categories: any[] = [];
   
-  categories: { value: number; name: string }[] = [];
   cars: any[] = [];
   contracts: any[] = [];
   
@@ -71,45 +58,87 @@ export class TransactionFormComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.isEditMode = !!this.data;
+    this.isEditMode = !!this.data && !!this.data.transactionId;
+    const isPreFilled = !!this.data && this.data.preFilled === true;
+
     this.loading = true;
     
     // Initialize form with default values
     this.transactionForm = this.fb.group({
-      type: [{ value: this.isEditMode ? this.data.type : TransactionType.Income, disabled: this.isEditMode }, Validators.required],
-      category: [this.isEditMode ? this.data.category : '', Validators.required],
-      amount: [this.isEditMode ? this.data.amount : '', [Validators.required, Validators.min(0.01)]],
+      type: [{ value: this.isEditMode ? this.data.type : TransactionType.Income, disabled: this.isEditMode || isPreFilled }, Validators.required],
+      category: [{ value: '', disabled: isPreFilled }, Validators.required],
+      amount: [{ value: this.data?.amount }, [Validators.required, Validators.min(0.01)]],
       date: [this.isEditMode ? new Date(this.data.date) : new Date(), Validators.required],
-      description: [this.isEditMode ? this.data.description : ''],
-      contractId: [this.isEditMode ? this.data.contractId : null],
-      carId: [this.isEditMode ? this.data.carId : null]
+      description: [ this.data?.description || '', [Validators.maxLength(500)]],
+      contractId: [this.data?.contractId || null],
+      carId: [this.data?.carId || null]
     });
     
-    if (this.isEditMode) {
-      this.transactionId = this.data.id;
-      this.updateCategoriesForType(this.data.type);
-    } else {
-      this.updateCategoriesForType(TransactionType.Income);
-    }
-    
-
+    // Load all data including categories from database
     forkJoin({
-      cars: this.datafetchservice.getCars(),
-      contracts: this.datafetchservice.getContracts()
+      cars: this.datafetchservice.getCars('', 1, 200), // Adjust page size as needed
+      contracts: this.datafetchservice.getContracts('', 1, 200),
+      categories: this.datafetchservice.getCategories()
     }).subscribe(
-      ({ cars, contracts }) => {
+      ({ cars, contracts, categories }) => {
+        // console.log('Loaded categories:', categories);
+        
         this.cars = cars.cars;
         this.contracts = contracts.contracts;
-  
-        // Set initial input display if editing
-        if (this.isEditMode && this.data.carId) {
-          const selected = this.cars.find(car => car.id === this.data.carId);
-          if (selected) {
-            this.carInputControl.setValue(this.getCarDisplayName(selected));
-          }
+        this.allCategories = categories;
+        
+        // Separate categories by type
+        this.incomeCategories = categories.filter(cat => cat.type === 'Income');
+        this.expenseCategories = categories.filter(cat => cat.type === 'Expense');
+        
+        // console.log('Income categories:', this.incomeCategories);
+        // console.log('Expense categories:', this.expenseCategories);
+        
+        // Set initial categories based on transaction type
+        // if (this.isEditMode) {
+        //   this.updateCategoriesForType(this.data.type);
+        // } else {
+        //   this.updateCategoriesForType(TransactionType.Income);
+        // }
+        
+        // // Set initial input display if editing
+        // if (this.isEditMode && this.data.carId) {
+        //   const selected = this.cars.find(car => car.id === this.data.carId);
+        //   if (selected) {
+        //     this.carInputControl.setValue(this.getCarDisplayName(selected));
+        //   }
+        // }
+
+        // Set initial categories based on transaction type
+      const initialType = this.data?.type !== undefined ? this.data.type : TransactionType.Income;
+      this.updateCategoriesForType(initialType);
+      
+      // NOW set the category value after categories are loaded
+      if (this.data?.category) {
+        this.transactionForm.patchValue({
+          category: this.data.category
+        });
+      }
+      
+      // Set contractId and carId if provided
+      if (this.data?.contractId) {
+        this.transactionForm.patchValue({
+          contractId: this.data.contractId
+        });
+      }
+      
+      if (this.data?.carId) {
+        this.transactionForm.patchValue({
+          carId: this.data.carId
+        });
+        
+        const selected = this.cars.find(car => car.id === this.data.carId);
+        if (selected) {
+          this.carInputControl.setValue(this.getCarDisplayName(selected));
         }
+      }
   
-        // Filter observable
+        // Filter observable for car autocomplete
         this.carInputControl.valueChanges.subscribe(value => {
           const filterValue = value?.toLowerCase() || '';
           this.filteredCars = this.cars.filter(car =>
@@ -121,16 +150,14 @@ export class TransactionFormComponent implements OnInit {
       },
       error => {
         console.error('Error loading data', error);
-        this.snackBar.open('Error loading cars and contracts', 'Close', { duration: 3000 });
+        this.snackBar.open('Error loading data. Please try again.', 'Close', { duration: 3000 });
         this.loading = false;
       }
     );
-
-    
-    
     
     // Listen for type changes to update categories
     this.transactionForm.get('type')?.valueChanges.subscribe(type => {
+      // console.log('Type changed to:', type);
       this.updateCategoriesForType(type);
       this.transactionForm.get('category')?.setValue('');
     });
@@ -159,38 +186,41 @@ export class TransactionFormComponent implements OnInit {
     this.transactionForm.get('carId')?.setValue(selectedCar ? selectedCar.id : null);
   }
 
-  getCategoryIcon(category: TransactionCategory): string {
-    const icons = {
-      [TransactionCategory.RentalPayment]: 'payments',
-      [TransactionCategory.Deposit]: 'savings',
-      [TransactionCategory.LateFee]: 'schedule',
-      [TransactionCategory.DamageFee]: 'build',
-      [TransactionCategory.Maintenance]: 'handyman',
-      [TransactionCategory.Insurance]: 'security',
-      [TransactionCategory.Fuel]: 'local_gas_station',
-      [TransactionCategory.Taxes]: 'account_balance',
-      [TransactionCategory.Salaries]: 'people',
-      [TransactionCategory.Utilities]: 'power',
-      [TransactionCategory.Marketing]: 'campaign',
-      [TransactionCategory.OfficeCosts]: 'business',
-      [TransactionCategory.VehiclePurchase]: 'directions_car',
-      [TransactionCategory.Other]: 'more_horiz'
+  getCategoryIcon(categoryId: number): string {
+    // Map category IDs to icons based on category name
+    const category = this.allCategories.find(cat => cat.id === categoryId);
+    if (!category) return 'help_outline';
+    
+    // Remove spaces and convert to lowercase for matching
+    const normalizedName = category.name.replace(/\s+/g, '').toLowerCase();
+    
+    const iconMap: { [key: string]: string } = {
+      'rentalpayment': 'payments',
+      'deposit': 'savings',
+      'latefee': 'schedule',
+      'damagefee': 'build',
+      'maintenance': 'handyman',
+      'insurance': 'security',
+      'fuel': 'local_gas_station',
+      'taxes': 'account_balance',
+      'salaries': 'people',
+      'utilities': 'power',
+      'marketing': 'campaign',
+      'officecosts': 'business',
+      'vehiclepurchase': 'directions_car',
+      'other': 'more_horiz'
     };
     
-    return icons[category] || 'help_outline';
+    return iconMap[normalizedName] || 'help_outline';
   }
 
   updateCategoriesForType(type: TransactionType): void {
     if (type === TransactionType.Income) {
-      this.categories = this.incomeCategoriesEnum.map(value => ({
-        value,
-        name: this.datafetchservice.getCategoryName(value)
-      }));
+      this.categories = this.incomeCategories;
+      // console.log('Updated to income categories:', this.categories);
     } else {
-      this.categories = this.expenseCategoriesEnum.map(value => ({
-        value,
-        name: this.datafetchservice.getCategoryName(value)
-      }));
+      this.categories = this.expenseCategories;
+      console.log('Updated to expense categories:', this.categories);
     }
   }
 
@@ -210,55 +240,70 @@ export class TransactionFormComponent implements OnInit {
     
     const formValue = this.transactionForm.getRawValue();
     
-    if (this.isEditMode) {
-      const updateData: UpdateTransaction = {
+    // if (this.isEditMode) {
+    //   const updateData: UpdateTransaction = {
+    //     category: formValue.category,
+    //     amount: formValue.amount,
+    //     date: formValue.date.toISOString(),
+    //     description: formValue.description,
+    //     contractId: formValue.contractId,
+    //     carId: formValue.carId
+    //   };
+      
+    //   this.datasendservice.updateTransaction(this.transactionId, updateData).subscribe(
+    //     () => {
+    //       this.snackBar.open('Transaction updated successfully', 'Close', { duration: 3000 });
+    //       this.dialogRef.close(true);
+    //     },
+    //     error => {
+    //       console.error('Error updating transaction', error);
+    //       this.snackBar.open('Error updating transaction', 'Close', { duration: 3000 });
+    //       this.submitting = false;
+    //     }
+    //   );
+    // } else {
+    //   const createData: CreateTransaction = {
+    //     type: formValue.type,
+    //     category: formValue.category,
+    //     amount: formValue.amount,
+    //     date: formValue.date.toISOString(),
+    //     description: formValue.description,
+    //     contractId: formValue.contractId,
+    //     carId: formValue.carId
+    //   };
+      
+    //   this.datasendservice.createTransaction(createData).subscribe(
+    //     () => {
+    //       this.snackBar.open('Transaction created successfully', 'Close', { duration: 3000 });
+    //       this.dialogRef.close(true);
+    //     },
+    //     error => {
+    //       console.error('Error creating transaction', error);
+    //       this.snackBar.open('Error creating transaction', 'Close', { duration: 3000 });
+    //       this.submitting = false;
+    //     }
+    //   );
+    // }
+
+
+     const transaction = {
+        transactionType: formValue.type,
         category: formValue.category,
         amount: formValue.amount,
-        date: formValue.date.toISOString(),
+        date: formValue.date,
         description: formValue.description,
         contractId: formValue.contractId,
         carId: formValue.carId
       };
-      
-      this.datasendservice.updateTransaction(this.transactionId, updateData).subscribe(
-        () => {
-          this.snackBar.open('Transaction updated successfully', 'Close', { duration: 3000 });
-          this.dialogRef.close(true);
-        },
-        error => {
-          console.error('Error updating transaction', error);
-          this.snackBar.open('Error updating transaction', 'Close', { duration: 3000 });
-          this.submitting = false;
-        }
-      );
-    } else {
-      const createData: CreateTransaction = {
-        type: formValue.type,
-        category: formValue.category,
-        amount: formValue.amount,
-        date: formValue.date.toISOString(),
-        description: formValue.description,
-        contractId: formValue.contractId,
-        carId: formValue.carId
-      };
-      
-      this.datasendservice.createTransaction(createData).subscribe(
-        () => {
-          this.snackBar.open('Transaction created successfully', 'Close', { duration: 3000 });
-          this.dialogRef.close(true);
-        },
-        error => {
-          console.error('Error creating transaction', error);
-          this.snackBar.open('Error creating transaction', 'Close', { duration: 3000 });
-          this.submitting = false;
-        }
-      );
-    }
+
+
+  this.dialogRef.close(transaction);
   }
 
   // Helper methods for template
-  getCategoryName(category: number): string {
-    return this.datafetchservice.getCategoryName(category);
+  getCategoryName(categoryId: number): string {
+    const category = this.allCategories.find(cat => cat.id === categoryId);
+    return category?.name || 'Unknown';
   }
   
   getContractDisplayName(contract: any): string {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { Task, CreateTaskRequest, UpdateTaskRequest } from '../models/task.model';
 
 @Injectable({
@@ -41,5 +42,26 @@ export class TaskService {
 
   deleteTask(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // Attempts bulk delete via API; if unsupported, falls back to deleting each active task
+  deleteAllActiveTasks(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}?status=active`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 404 || error.status === 405) {
+          // Fallback: fetch active tasks then delete individually
+          return this.getActiveTasks().pipe(
+            switchMap((tasks) => {
+              if (!tasks || tasks.length === 0) {
+                return of(void 0);
+              }
+              const deletions = tasks.map(t => this.deleteTask(t.id));
+              return forkJoin(deletions).pipe(switchMap(() => of(void 0)));
+            })
+          );
+        }
+        throw error;
+      })
+    );
   }
 }
